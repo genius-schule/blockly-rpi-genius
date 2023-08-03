@@ -35,6 +35,7 @@ Blockly.Blocks['start_Block'] = {
 Blockly.Python['start_Block'] = function(block) {
   Blockly.Python.definitions_['libraries_start_Block'] = 'import matplotlib.pyplot as plt\n'+
   'import time\n'+
+  'import os\n'+
   'from datetime import datetime\n';
   Blockly.Python.definitions_['initialisierungen_start_Block'] = 'yAxis_data = []\n'+
   'xAxis_data = []\n'+
