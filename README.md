@@ -18,13 +18,12 @@ The programming is done with blockly and some blocks we programmed by ourselves.
 Since the code is used in german schools, most sensors are implemented in german
 
 ## Todo
-
-[ ] Update to newest blockly version
-[ ] Program one sensor block (AHT22)
-[ ] Update Readme (Installation, depencencies...) and how to use
-[ ] Installation instructions
-[ ] Desktop files
-[ ] Changed seeed installation file
+* [ ] Update to newest blockly version
+* [ ] Program one sensor block (AHT22)
+* [ ] Update Readme (Installation, depencencies...) and how to use
+* [ ] Installation instructions
+* [ ] Desktop files
+* [ ] Changed seeed installation file
 
 ## How to setup the system
 The outcome of this section should be a ready-to-use system image for the Raspberry Pi 4.
