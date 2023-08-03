@@ -1,3 +1,13 @@
+# Changes made by nefft0n/Niklas Westermann
+# This script is originally from https://github.com/Seeed-Studio/grove.py
+# It should work with this command: 
+# curl -sL https://github.com/Seeed-Studio/grove.py/raw/master/install.sh | sudo bash -s -
+# Since it is not working, I hat do comment some lines.
+# The changed lines are marked with '####'
+# In short, two things are changed:
+# 1. libmraa and upm are not installed anymore
+# 2. pip is the command to install packages (pip3 is not longer used, since python3 is now the standard
+
 #!/bin/bash
 #
 : <<'EOF'
