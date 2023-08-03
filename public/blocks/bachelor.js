@@ -46,10 +46,10 @@ Blockly.Python['start_Block'] = function(block) {
   Blockly.Python.definitions_['initialisierungen_inDateiSchreiben'] =
   'aktuelleZeit = datetime.now()\n'+
   'pfadSchreibdatei = "/home/pi/Desktop/Messungen/Messungen_{}.txt".format(aktuelleZeit.strftime("%d_%m_%y"))\n'+
-  'folderExists = os.path.exists("/home/pi/Desktop/Messungen")'+
-  'if not folderExists:'+
-  '# Create directory because it does not exist'+
-  '  os.makedirs("/home/pi/Desktop/Messungen")'+
+  'folderExists = os.path.exists("/home/pi/Desktop/Messungen")\n'+
+  'if not folderExists:\n'+
+  '# Create directory because it does not exist\n'+
+  '  os.makedirs("/home/pi/Desktop/Messungen")\n'+
   'f = open(pfadSchreibdatei, "a")\n'+
   'f.write("\\n\\nMessung am {}:".format(aktuelleZeit.strftime("%d/%m/%y %H:%M:%S")))\n'+
   'f.close()';
