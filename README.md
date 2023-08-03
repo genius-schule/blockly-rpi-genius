@@ -31,9 +31,12 @@ The outcome of this section should be a ready-to-use system image for the Raspbe
 1. Download Raspberry Pi OS and install it on an SD card, boot and set up username and passwort.
 2. Update the Pi, activate VNC and set display resloution to 1280x720 (via `raspi config`, the display resolution is changed to match the screen of iPad, which are used in school).
 3. Install <a href="https://raspap.com/#docs">raspap</a> and *onboard*, a virtual keyboard.
-4. Install `matplolib` and the *grove package* by seeed TODO
+4. Install `matplolib` and the grove package (original can be found <a href="https://github.com/Seeed-Studio/grove.py">here</a>, but this is not working on 03.08.2023, a working version is in `files`)
 5. Clone this git repository
 6. Install the desktop files TODO
+
+install these packages:
+sudo apt-get install python3-dev python3-gpiozero python3-websockets python3-matplotlib
 
 ## Sensors with specific blocks
 We use the <a href="https://wiki.seeedstudio.com/Grove_System/">grove system</a> by *seeed studio*. The sensors of the *grove system* are connected with the <a href="https://wiki.seeedstudio.com/Grove_Base_Hat_for_Raspberry_Pi/">Grove Base Hat</a> to the Raspberry Pi. The following sensors where implemented:
@@ -48,6 +51,8 @@ We use the <a href="https://wiki.seeedstudio.com/Grove_System/">grove system</a
   * (Python-Library) <a href="https://github.com/Seeed-Studio/grove.py">grove.py</a>
 
 Additionally, the sensor <a href="https://www.waveshare.com/wiki/MQ-135_Gas_Sensor"> MQ-135</a> is integrated.
+
+Some exampled by grove are in the examples folder `/usr/local/lib/python3.9/dist-packages/grove`.
 
 ## Blockly-gPIo
 Visual programming for the Raspberry Pi with access to the GPIO and a simple browser-based simulation mode.
@@ -80,3 +85,8 @@ we found [blockly-gpio](https://github.com/carlosperate/Blockly-gPIo) from carlo
   cp -r Blockly-gPIo/public/* "/var/www/html/Blockly-gPIo"
   chown -R www-data:www-data "/var/www/html/Blockly-gPIo"
   ```
+
+# Start blokly
+Simple by executing `pyhton run.py`.
+
+Then open `public/index_de.html` with a browser and chance the settings to `local` (gear button).
