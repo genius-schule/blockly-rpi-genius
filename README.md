@@ -13,11 +13,12 @@ The long story:
 
 We want to use the Raspberry Pi 4 in school to teach the pupils how to code. Therefore external sensors are programmed and the data is read and displayed. For example one can use a CO2-sensor to investigate photosynthesis.
 
-The programming is done with blockly and some blocks we programmed by ourselves. The sensor are mostly grove sensors. Then the data is displayed live with <a href="https://matplotlib.org/">Matplotlib</a>. The pupils connect to the Raspberry Pi by WiFi (provided by raspap) with a VNC app.
+The programming is done with blockly and some blocks we programmed by ourselves. The sensor are mostly grove sensors. Then the data is displayed live with <a href="https://matplotlib.org/">matplotlib</a>. The pupils connect to the Raspberry Pi by WiFi (provided by raspap) with a VNC app.
 
 Since the code is used in german schools, most sensors are implemented in german
 
 ## Todo
+
 [ ] Update to newest blockly version
 [ ] Program one sensor block (AHT22)
 [ ] Update Readme (Installation, depencencies...) and how to use
