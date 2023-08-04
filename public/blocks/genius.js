@@ -26,12 +26,9 @@ Blockly.Blocks['use_aht20'] = {
 };
 
 Blockly.Python['use_aht20'] = function(block) {
-	Blockly.Python.definitions_['libs_aht20'] = {
-		'import time \n'+
+	Blockly.Python.definitions_['libs_aht20'] = 'import time \n'+
 		'from grove.i2c import Bus \n';
-	}
-	Blockly.Python.defintions_['class_aht20'] = {
-		/* copied from the example */
+	Blockly.Python.definitions_['class_aht20'] ='# copied from the example\n'+
 		'class GroveTemperatureHumidityAHT20(object):\n'+
     		'	def __init__(self, address=0x38, bus=None):\n'+
         	'		self.address = address\n'+
@@ -56,23 +53,18 @@ Blockly.Python['use_aht20'] = function(block) {
         	'		temperature += data[5]\n'+
         	'		temperature = temperature / 1048576.0*200.0-50.0  # Convert to Celsius\n'+
         	'		return temperature, humidity\n';
-	}
-	Blockly.Python.definitions_['init_aht20'] = {
-		/* this is a dummy which needs to be changed */
-		'aht20InfoSet = ["aht20", [], [], 0, 0]\n';
-	}
-	Blockly.Python.definitions_['meas_aht20'] = {
-		'temperature, humidity  = sensor.read()\n'+
+	Blockly.Python.definitions_['init_aht20'] = 'aht20InfoSet = ["aht20", [], [], 0, 0]\n';
+		//above is a dummy which needs to be changed
+	Blockly.Python.definitions_['meas_aht20'] = 'sensaht20 = GroveTemperatureHumidityAHT20()\n'+
+		'temperature, humidity  = sensaht20.read()\n'+
 		'print("Temperature in Celsius is {:.2f} C".format(temperature))\n'+
 		'print("Relative Humidity is {:.2f} %".format(humidity))\n';
-	}
 	var statements_blocks = Blockly.Python.statementToCode(block, 'blocks');
-	var code = {
-		'verwendeterSensor = aht20InfoSet\n'+
+	var code = 'verwendeterSensor = aht20InfoSet\n'+
 		'for i in range(1):\n'+
 		'	pass\n'+
+		statements_blocks+
 		'verwendeterSensor = 0\n';
-	}
 	return code;
 };
 
