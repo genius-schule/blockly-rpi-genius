@@ -46,12 +46,12 @@ Blockly.Python['start_Block'] = function(block) {
   'graphExistiert = False\n';
   Blockly.Python.definitions_['initialisierungen_inDateiSchreiben'] =
   'aktuelleZeit = datetime.now()\n'+
-  'pfadSchreibdatei = "/home/pi/Desktop/Messungen/Messungen_{}.txt".format(aktuelleZeit.strftime("%d_%m_%y"))\n'+
-  'folderExists = os.path.exists("/home/pi/Desktop/Messungen")\n'+
+  'pfadSchreibdatei = "~/Desktop/Messungen/Messungen_{}.txt".format(aktuelleZeit.strftime("%d_%m_%y"))\n'+
+  'folderExists = os.path.exists(os.path.expanduser("~/Desktop/Messungen"))\n'+
   'if not folderExists:\n'+
   '# Create directory because it does not exist\n'+
-  '  os.makedirs("/home/pi/Desktop/Messungen")\n'+
-  'f = open(pfadSchreibdatei, "a")\n'+
+  '  os.makedirs(os.path.expanduser("~/Desktop/Messungen"))\n'+
+  'f = open(os.path.expanduser(pfadSchreibdatei), "a")\n'+
   'f.write("\\n\\nMessung am {}:".format(aktuelleZeit.strftime("%d/%m/%y %H:%M:%S")))\n'+
   'f.close()';
   Blockly.Python.definitions_['funktion_verwendeGraphen'] =
@@ -77,7 +77,7 @@ Blockly.Python['start_Block'] = function(block) {
   Blockly.Python.definitions_['funktion_schreibeDaten'] =
   'def schreibeDaten(erhalteneDaten, messEinheit, sensorName, timeStamp):\n'+
   '  global pfadSchreibdatei\n'+
-  '  f = open(pfadSchreibdatei, "a")\n'+
+  '  f = open(os.path.expanduser(pfadSchreibdatei), "a")\n'+
   '  f.write("\\n{}: {} {} mit Sensor: {}".format(timeStamp, erhalteneDaten, messEinheit, sensorName))\n'+
   '  f.close()\n\n';
   var statements_blocks = Blockly.Python.statementToCode(block, 'blocks');
