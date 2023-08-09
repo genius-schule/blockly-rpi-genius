@@ -24,6 +24,7 @@ Since the code is used in german schools, most sensors are implemented in german
 * [ ] Installation instructions
 * [ ] Desktop files
 * [ ] Changed seeed installation file
+* [ ] Some optical changes if used productive!
 
 ## How to setup the system
 The outcome of this section should be a ready-to-use system image for the Raspberry Pi 4.
@@ -52,7 +53,7 @@ We use the <a href="https://wiki.seeedstudio.com/Grove_System/">grove system</a
 
 Additionally, the sensor <a href="https://www.waveshare.com/wiki/MQ-135_Gas_Sensor"> MQ-135</a> is integrated.
 
-Some exampled by grove are in the examples folder `/usr/local/lib/python3.9/dist-packages/grove`.
+Some examples by grove are in the examples folder `/usr/local/lib/python3.9/dist-packages/grove`.
 
 ## Blockly-gPIo
 Visual programming for the Raspberry Pi with access to the GPIO and a simple browser-based simulation mode.
@@ -86,7 +87,7 @@ we found [blockly-gpio](https://github.com/carlosperate/Blockly-gPIo) from carlo
   chown -R www-data:www-data "/var/www/html/Blockly-gPIo"
   ```
 
-# Start blokly
-Simple by executing `pyhton run.py`.
+# Start blockly
+Simple by executing `python3 run.py`.
 
 Then open `public/index_de.html` with a browser and chance the settings to `local` (gear button).
