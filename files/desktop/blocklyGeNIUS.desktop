@@ -2,4 +2,4 @@
 Name=BlocklyGC2
 Type=Application
 Exec=firefox /home/pi/blockly-rpi-genius/public/index_de.html
-Icon=/home/pi/blocky-rpi-genius/public/favicon.png
+Icon=/home/pi/blockly-rpi-genius/public/favicon.png
