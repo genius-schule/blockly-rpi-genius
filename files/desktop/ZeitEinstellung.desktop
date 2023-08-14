@@ -1,0 +1,7 @@
+[Desktop Entry]
+
+Name = Zeit Einstellen
+Type = Application
+Exec = python /home/pi/ZeitEinstellen/TkinterZeit.py
+Icon = /home/pi/ZeitEinstellen/cc_uhr_small.png
+Terminal = false

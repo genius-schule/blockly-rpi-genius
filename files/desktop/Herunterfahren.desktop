@@ -1,0 +1,7 @@
+[Desktop Entry]
+
+Name = Herunterfahren
+Type = Application
+Exec = python /home/pi/RechnerAusschalten/RechnerAusschalten.py
+Icon = /home/pi/RechnerAusschalten/off-on-power-switch.png
+Terminal = false
