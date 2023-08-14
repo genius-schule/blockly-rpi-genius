@@ -2,6 +2,6 @@
 
 Name = Herunterfahren
 Type = Application
-Exec = python /home/pi/RechnerAusschalten/RechnerAusschalten.py
-Icon = /home/pi/RechnerAusschalten/off-on-power-switch.png
+Exec = python3 /home/pi/blockly-rpi-genius/files/desktop/user_shutdown/user_shutdown.py
+Icon = /home/pi/blockly-rpi-genius/files/desktop/user_shutdown/off-on-power-switch.png
 Terminal = false
