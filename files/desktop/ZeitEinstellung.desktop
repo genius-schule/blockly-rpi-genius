@@ -2,6 +2,6 @@
 
 Name = Zeit Einstellen
 Type = Application
-Exec = python /home/pi/ZeitEinstellen/TkinterZeit.py
-Icon = /home/pi/ZeitEinstellen/cc_uhr_small.png
+Exec = python3 /home/pi/blockly-rpi-genius/files/desktop/ZeitEinstellen/TkinterZeit.py
+Icon = /home/pi/blockly-rpi-genius/files/desktop/ZeitEinstellen/cc_uhr_small.png
 Terminal = false

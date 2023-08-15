@@ -1,5 +1,5 @@
 [Desktop Entry]
 Name=BlocklyGC2
 Type=Application
-Exec=chromium-browser /home/pi/Blockly-gPIO_BachelorJerger/public/index_de.html
-Icon=/home/pi/Blockly-gPIO_BachelorJerger/public/favicon.png
+Exec=firefox /home/pi/blockly-rpi-genius/public/index_de.html
+Icon=/home/pi/blocky-rpi-genius/public/favicon.png

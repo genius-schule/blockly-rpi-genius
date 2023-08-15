@@ -34,10 +34,12 @@ The outcome of this section should be a ready-to-use system image for the Raspbe
 3. Install <a href="https://raspap.com/#docs">raspap</a> and *onboard*, a virtual keyboard.
 4. Install `matplolib` and the grove package (original can be found <a href="https://github.com/Seeed-Studio/grove.py">here</a>, but this is not working on 03.08.2023, a working version is in `files`)
 5. Clone this git repository
-6. Install the desktop files TODO
+6. Install the desktop files by coping all .desktop files in `files/desktop` to `~/Desktop`
 
 install these packages:
-sudo apt-get install python3-dev python3-gpiozero python3-websockets python3-matplotlib
+```
+sudo apt-get install python3-dev python3-gpiozero python3-websockets python3-matplotlib firefox
+```
 
 ## Sensors with specific blocks
 We use the <a href="https://wiki.seeedstudio.com/Grove_System/">grove system</a> by *seeed studio*. The sensors of the *grove system* are connected with the <a href="https://wiki.seeedstudio.com/Grove_Base_Hat_for_Raspberry_Pi/">Grove Base Hat</a> to the Raspberry Pi. The following sensors where implemented:
