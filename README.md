@@ -29,12 +29,12 @@ Since the code is used in german schools, most sensors are implemented in german
 ## How to setup the system
 The outcome of this section should be a ready-to-use system image for the Raspberry Pi 4.
 
-1. Download Raspberry Pi OS and install it on an SD card, boot and set up username and passwort.
+1. Download Raspberry Pi OS and install it on an SD card, boot and set up username and passwort (pi:pi, username should be `pi`, since paths refer to `/home/pi`.
 2. Update the Pi, activate VNC and set display resloution to 1280x720 (via `raspi config`, the display resolution is changed to match the screen of iPad, which are used in school).
 3. Install <a href="https://raspap.com/#docs">raspap</a> and *onboard*, a virtual keyboard.
 4. Install `matplolib` and the grove package (original can be found <a href="https://github.com/Seeed-Studio/grove.py">here</a>, but this is not working on 03.08.2023, a working version is in `files`)
 5. Clone this git repository
-6. Install the desktop files by coping all .desktop files in `files/desktop` to `~/Desktop`
+6. Install the desktop files by coping the .desktop files in `files/desktop` to `~/Desktop`, the file `blocklyServer.desktop` has to be copied to `/etc/xdg/autostart`!
 
 install these packages:
 ```

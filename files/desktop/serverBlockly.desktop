@@ -1,0 +1,4 @@
+[Desktop Entry]
+
+Name=BlocklyServer
+Exec=/usr/bin/python3 /home/pi/blockly-rpi-genius/run.py
