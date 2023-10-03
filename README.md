@@ -38,7 +38,7 @@ The outcome of this section should be a ready-to-use system image for the Raspbe
 
 install these packages:
 ```
-sudo apt-get install python3-dev python3-gpiozero python3-websockets python3-matplotlib firefox
+sudo apt-get install python3-dev python3-gpiozero python3-websockets python3-matplotlib firefox python3-pandas
 ```
 
 ## Sensors with specific blocks
@@ -93,3 +93,32 @@ we found [blockly-gpio](https://github.com/carlosperate/Blockly-gPIo) from carlo
 Simple by executing `python3 run.py`.
 
 Then open `public/index_de.html` with a browser and chance the settings to `local` (gear button).
+
+# Writing new blocks
+This is quite easy, but a few steps need to be done:
+1. You can develop new blocks in the `development.py` file, since all blocks done in the GeNIUS project where developed here.
+2. Copy the contents of the block in the `genius.js` file in `public/blocks`. To do this faster, use the `addstring` script, which ads the desired strings to the start and end of the lines. Important: since most blocks are structured in functions, the function needs to be executed at the end ob the block.
+3. Think of adding `;` at the end of every block definition.
+
+# Code refactor
+The experimental thinking is:
+1. Baue das Experiment auf und schließe die Sensoren an
+2. Lese das Thermometer ab
+3. Trage den Wert in den Graphen ein
+4. Warte 5min
+5. Lese das Thermometer ab
+6. Trage den Wert in den Graphen ein
+7. Warte 5min
+8. Wiederhole Schritte 5. bis 7. 10mal
+9. Analysiere den entstandenen Graphen
+
+Ideas how to code the blocks:
+
+* Do we really need a START-END block? -> would be convenient for pupils, but can be empty
+* The REPEAT block sould work OOTB
+* One block per sensor with text "Messe CO2-Wert und notiere Wert" bzw. nur "Messe CO2-Wert und gib ihn aus"
+* If an extra block "Speichere den Wert" is needed has to be discussed
+* Possibly block "zeige Graphen"
+* Graph should be created live, not only at the end
+* How to label the axis correctly?
+

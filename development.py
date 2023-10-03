@@ -7,10 +7,12 @@ import time
 import os
 import csv
 import random
-from grove.i2c import Bus
+#from grove.i2c import Bus
 
 ###############################################################################
 # START BLOCK
+# All above libraries are added here, since we need them either way and
+# do not add them in every sensor block.
 ###############################################################################
 # Data directory for saving measurements and graphs
 dataDir = "~/Desktop/Messungen/"
@@ -60,20 +62,29 @@ def measurement_aht20():
     csvaht20temp = "aht20temp.csv"
     csvaht20humi = "aht20humi.csv" # Not implemented yet
 
-    aht20 = GroveAHT20()
-    temp, humi = aht20.read()
-    #DEBUG
-    #temp = 1
-    #humi = 10
-    time = dt.datetime.now().strftime("%H:%M:%S")
+    try:
+        # For debugging without the seeed library comment the following two lines and uncomment below
+        #aht20 = GroveAHT20()
+        #temp, humi = aht20.read()
+        temp = 1
+        #humi = 10
 
-    fileaht20temp = os.path.expanduser(dataDir) + str(csvaht20temp)
-    with open(fileaht20temp, 'a', newline='') as f:
-        writer = csv.writer(f)
-        writer.writerow([time, temp, "°C", "AHT20"])
+        time = dt.datetime.now().strftime("%H:%M:%S")
+
+        fileaht20temp = os.path.expanduser(dataDir) + str(csvaht20temp)
+        with open(fileaht20temp, "a", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow([time, temp, "°C", "AHT20"])
+    except:
+        print("Hast du den Sensor korrekt angeschlossen?")
+        print("Es konnten keine Daten aufgenommen werden.")
+
+#measurement_aht20() # Only needed in finished block
 
 ###############################################################################
 # SENSOR BLOCK TEST
+# This only tests the graph capabilities with random values.
+# Name and unit have to be set as arguments
 ###############################################################################
 def measurement_TEST(name, unit):
     csvTESTtemp = name + "values.csv"
@@ -82,9 +93,11 @@ def measurement_TEST(name, unit):
     time = dt.datetime.now().strftime("%H:%M:%S")
 
     fileTESTtemp = os.path.expanduser(dataDir) + str(csvTESTtemp)
-    with open(fileTESTtemp, 'a', newline='') as f:
+    with open(fileTESTtemp, "a", newline="") as f:
         writer = csv.writer(f)
         writer.writerow([time, value, unit, name])
+
+#measurement_TEST("name", "unit") # Only needed in finished block
 
 ###########################################################################
 # PLOTTING BLOCK
@@ -96,8 +109,17 @@ def plot_data():
         if file.endswith(".csv"):
             filelist.append(file)
 
+    # Check if filelist is empty, if empty return without plot
+    if not filelist:
+        print("Es gibt keine Daten zum Auswerten!")
+        print("Mindestens ein Sensor muss verwendet werden und angeschlossen sein.")
+        return 1
+    
+    # List of colors, since the below command does not work on old versions
+    # Hopefully they are enough.
     #colors = mpl.colormaps.get_cmap("Set1").colors
-    colors = ["red", "green", "blue", "black", "orange", "gray"]
+    colors = ["red", "green", "blue", "black", "orange", "gray", "yellow",
+              "teal", "cyan", "pink", "lime", "navy", "orchid", "tan"]
 
     # Create a figure with a subplot for every sensor, squeeze: always tuples
     fig, axs = plt.subplots(len(filelist), squeeze = False, sharex = True)
@@ -108,7 +130,7 @@ def plot_data():
     for num in range(len(filelist)):
         path = os.path.expanduser(dataDir) + filelist[num]
         # Read data
-        data = pd.read_csv(path, delimiter = ',', header = None,
+        data = pd.read_csv(path, delimiter = ",", header = None,
                                names = ["time", "value", "unit", "name"])
         data["time"] = pd.to_datetime(data["time"], format = "%H:%M:%S")
         # Only first value for unit and name are used, since they
@@ -119,25 +141,26 @@ def plot_data():
         axs[num].plot(data["time"], data["value"], marker = "x", color = colors[num])
         axs[num].grid()
         # CAREFUL: The measurement rate has to be 1Hz or lower!
-        # Else, the points in between are not plotted, since it is the same
+        # Else, the points in between are not plotted, since they have the same
         # timestamp
         axs[num].xaxis.set_major_formatter(DateFormatter("%H:%M:%S"))
 
-    #fig.supxlabel("Zeit")
+    #fig.supxlabel("Zeit") # does not work on old versions of matplotlib
     plt.xticks(rotation = 45)
     plt.tight_layout()
     plotpath = os.path.expanduser(dataDir) + "plot.png"
     plt.savefig(plotpath, dpi = 300)
     plt.close()
+#plot_data() # Only needed in finished block
 
 ###############################################################################
 for count in range(100):
     print(count)
     measurement_aht20()
     measurement_TEST("TEST1", "unit")
-    #measurement_TEST("TEST2", "uni")
-    #measurement_TEST("TEST3", "un")
-    #measurement_TEST("TEST4", "u")
+    measurement_TEST("TEST2", "uni")
+    measurement_TEST("TEST3", "un")
+    measurement_TEST("TEST4", "u")
     plot_data()
     #time.sleep(1) # Minimum time distance, how is this done? TODO!
     #time.sleep(2)
