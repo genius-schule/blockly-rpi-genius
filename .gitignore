@@ -76,3 +76,6 @@ TestTemp_*
 
 # Python file to execute blockly code
 gpio.py
+
+# Block file to copy from
+copyblocks

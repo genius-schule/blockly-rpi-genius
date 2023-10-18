@@ -4,10 +4,14 @@ from matplotlib.dates import DateFormatter
 import pandas as pd
 import datetime as dt
 import time
+import math
+import sys
 import os
 import csv
 import random
 #from grove.i2c import Bus
+#from grove.gpio import GPIO
+#from grove.adc import ADC
 
 ###############################################################################
 # START BLOCK
@@ -80,6 +84,91 @@ def measurement_aht20():
         print("Es konnten keine Daten aufgenommen werden.")
 
 #measurement_aht20() # Only needed in finished block
+
+###############################################################################
+# SENSOR BLOCK SEEED DISTANCE V2
+###############################################################################
+usleep = lambda x: time.sleep(x / 1000000.0)
+_TIMEOUT1 = 1000
+_TIMEOUT2 = 10000
+
+class GroveUltrasonicRanger(object):
+    def __init__(self, pin):
+        self.dio = GPIO(pin)
+
+    def _get_distance(self):
+        self.dio.dir(GPIO.OUT)
+        self.dio.write(0)
+        usleep(2)
+        self.dio.write(1)
+        usleep(10)
+        self.dio.write(0)
+        self.dio.dir(GPIO.IN)
+
+        t0 = time.time()
+        count = 0
+        while count < _TIMEOUT1:
+            if self.dio.read():
+                break
+            count += 1
+        if count >= _TIMEOUT1:
+            return None
+        t1 = time.time()
+        count = 0
+        while count < _TIMEOUT2:
+            if not self.dio.read():
+                break
+            count += 1
+        if count >= _TIMEOUT2:
+            return None
+        t2 = time.time()
+        dt = int((t1 - t0) * 1000000)
+        if dt > 530:
+            return None
+        distance = ((t2 - t1) * 1000000 / 29 / 2)    # cm
+        return distance
+
+    def get_distance(self):
+        while True:
+            dist = self._get_distance()
+            if dist:
+                return dist
+
+def measurement_distance(pin):
+    sonar = GroveUltrasonicRanger(pin)
+    distance = sonar.get_distance()
+    #distance = 1
+    return distance
+
+#measurement_distance(5)
+
+###############################################################################
+# SENSOR BLOCK SEEED MOISTURE
+###############################################################################
+class GroveMoistureSensor:
+    # args: pin(int)
+    def __init__(self, channel):
+        self.channel = channel
+        self.adc = ADC()
+
+    @property
+    def moisture(self):
+        '''
+        Get the moisture strength value/voltage
+
+        Returns:
+            (int): voltage, in mV
+        '''
+        value = self.adc.read_voltage(self.channel)
+        return value
+
+def measurement_moisture(pin):
+    sensor = GroveMoistureSensor(pin)
+    moisture = sensor.moisture
+    #moisture = 1
+    return moisture
+
+#measurement_moisture(0)
 
 ###############################################################################
 # SENSOR BLOCK TEST
