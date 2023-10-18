@@ -42,7 +42,7 @@ Blockly.Python['start_block_genius'] = function(block) {
 		'#from grove.i2c import Bus\n';
 	Blockly.Python.definitions_['code_start_block_genius'] =
 		'# Data directory for saving measurements and graphs\n'+
-		'dataDir = "~/Desktop/Messungen/"\n'+
+		'dataDir = "~/blockly-web/messungen/"\n'+
 		'# Check if folder exists, else create directory\n'+
 		'if not os.path.exists(os.path.expanduser(dataDir)):\n'+
 		'    os.makedirs(os.path.expanduser(dataDir))\n'+
