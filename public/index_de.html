@@ -14,7 +14,6 @@
     <script src="blockly/javascript_compressed.js"></script>
     <script src="blockly/python_compressed.js"></script>
     <script src="blocks/genius.js"></script>
-    <script src="blocks/bachelor.js"></script>
     <script src="blocks/gpio.js"></script>
     <script src="blocks/dht11.js"></script>
     <script src="blocks/dht22.js"></script>
@@ -31,17 +30,15 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="css/normalize.css" media="screen">
-    <!-- <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'> -->
     <link rel="stylesheet" href="css/OpenSans.css">
-    <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous"> -->
     <link rel="stylesheet" href="fontawesome-free-5.6.3-web/css/all.css">
 </head>
 
 <body>
     <section class="page-header">
-        <img src="img/gc2.png" style="position:absolute;left:10px;top:20px;width:100px"></img>
-        <h1>GC²'s Blockly gPIo</h1>
-        <h2 class="project-tagline">Graphische GPIO Programmierung für den Raspberry Pi mit einfacher Simulation.</h2>
+        <img src="img/genius.png" style="position:absolute;left:10px;top:20px;width:150px"></img>
+        <h1>GeNIUS' Blockly</h1>
+        <h2 class="project-tagline">Graphische GPIO Programmierung für den Raspberry Pi.</h2>
     </section>
 
     <div class="leftContent">
@@ -74,7 +71,7 @@
 
         </div>
         <div id="mainMenu" class="btn-group topLeftContent" align="middle">
-            <a href="index.html"><img class="fas fa-2x" style="position:relative;left:-5rem" border="0" src="img/austria.png"></img></a>
+            <a href="index.html"><img class="fas fa-2x" style="position:relative;left:-5rem" border="0" src="img/german.png"></img></a>
             <i id="modeIcon" class="fas fa-bug fa-2x" style="color:dimgray;position:relative;left:-4rem"></i></a>
             <a class="fileBtn" href="#" onclick="loadWork()"><i class="fas fa-folder-open fa-2x menuBtn" ></i></a>
             <a class="fileBtn" href="#" onclick="saveWork()" style="padding-right:0.5rem"><i class="fas fa-save fa-2x menuBtn" ></i></a>
@@ -294,50 +291,51 @@
     <!-- Toolbox -->
     <xml id="toolbox" style="display: none">
         <category name="Befehle" colour="0">
-			<block type="text_print">
-                <value name="TEXT">
-                    <shadow type="text">
-                        <field name="TEXT">Hallo</field>
-                    </shadow>
-                </value>
-            </block>
-			<block type="math_number">
-                <field name="NUM">2</field>
-            </block>
-			<block type="math_arithmetic">
-                <field name="OP">ADD</field>
-                <value name="A">
-                    <shadow type="math_number">
-                        <field name="NUM">1</field>
-                    </shadow>
-                </value>
-                <value name="B">
-                    <shadow type="math_number">
-                        <field name="NUM">1</field>
-                    </shadow>
-                </value>
-            </block>
-			<block type="iteration"></block>
-			<block type="measure_in_varseconds"></block>
-			<block type="show_graph"></block>
-			<block type="start_Block"></block>
+		<block type="text_print">
+                	<value name="TEXT">
+                    		<shadow type="text">
+                        		<field name="TEXT">Hallo</field>
+                    		</shadow>
+                	</value>
+		</block>
+		<block type="math_number">
+                	<field name="NUM">2</field>
+		</block>
+		<block type="controls_repeat_ext">
+                	<value name="TIMES">
+                    		<shadow type="math_number">
+                        		<field name="NUM">10</field>
+                    		</shadow>
+                	</value>
+		</block>
+            	<block type="sleep_s_genius">
+                	<value name="sekunden">
+                    		<shadow type="math_number">
+                        		<field name="NUM">2</field>
+                    		</shadow>
+                	</value>
+		</block>
         </category>
-	<category name="Sensoren" colour="105">
-		<block type="use_sgp30"></block>
-		<block type="use_scd30"></block>
-		<block type="use_mq135"></block>
-		<block type="use_lightSensor"></block>
-        </category>
-	<category name="genius" colour="105">
+	<category name="GeNIUS" colour="220">
 		<block type="start_block_genius"></block>
 		<block type="aht20temp_genius"></block>
-		<block type="sensor_test_genius"></block>
 		<block type="plot_genius"></block>
-		<block type="use_old_aht20"></block>
-		<block type="use_old_aht20"></block>
+		<block type="sensor_test_genius">
+                	<value name="name">
+                    		<shadow type="text">
+                        		<field name="name">Sensorname</field>
+                    		</shadow>
+                	</value>
+                	<value name="unit">
+                    		<shadow type="text">
+                        		<field name="unit">Einheit</field>
+                    		</shadow>
+                	</value>
+		</block>
+		<block type="stub_messen_genius"></block>
+		<block type="stub_notieren_genius"></block>
+		<block type="stub_auswerten_genius"></block>
 	</category>
-		<sep></sep>
-		<sep></sep>
 		<sep></sep>
         
         <category name="Logik" colour="210">
@@ -721,30 +719,7 @@
 
     <!-- Blocks to display on the workspace -->
     <xml id="startBlocks" style="display: none">
-        <block type="start_Block" x="150" y="70"></block>
-		<!--<block type="text_print" x="20" y="9">
-            <value name="TEXT">
-                <block type="text">
-                    <field name="TEXT">GC²'s Blockly Implementierung für Raspberry Pi</field>
-                </block>
-            </value>
-            <next>
-                <block type="text_print">
-                    <value name="TEXT">
-                        <block type="text">
-                            <field name="TEXT">Wir haben ein paar Beispiele vorbereitet, welche von GitHub heruntergeladen werden können.</field>
-                        </block>
-                    </value>
-                    <next>
-                        <block type="text_print">
-                            <value name="TEXT">
-                                <block type="text">
-                                    <field name="TEXT">https://github.com/GrazerComputerClub/Blockly-gPIo/tree/master/examples</field>
-                                </block>
-                            </value>
-                        </block>
-                </block>
-        </block>-->
+        <block type="start_block_genius" x="150" y="70"></block>
     </xml>
 
     <script src="js/js_interpreter.js"></script>
