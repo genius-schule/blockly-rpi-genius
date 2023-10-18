@@ -9,6 +9,8 @@ import sys
 import os
 import csv
 import random
+import board
+import adafruit_scd4x
 from grove.i2c import Bus
 from grove.gpio import GPIO
 from grove.adc import ADC
@@ -63,27 +65,40 @@ class GroveAHT20(object):
         return temperature, humidity
 
 def measurement_aht20():
-    csvaht20temp = "aht20temp.csv"
-    csvaht20humi = "aht20humi.csv" # Not implemented yet
-
     try:
         # For debugging without the seeed library comment the following two lines and uncomment below
-        #aht20 = GroveAHT20()
-        #temp, humi = aht20.read()
-        temp = 1
-        #humi = 10
-
-        time = dt.datetime.now().strftime("%H:%M:%S")
-
-        fileaht20temp = os.path.expanduser(dataDir) + str(csvaht20temp)
-        with open(fileaht20temp, "a", newline="") as f:
-            writer = csv.writer(f)
-            writer.writerow([time, temp, "°C", "AHT20"])
+        aht20 = GroveAHT20()
+        temp, humi = aht20.read()
+        #temp = 1
     except:
         print("Hast du den Sensor korrekt angeschlossen?")
         print("Es konnten keine Daten aufgenommen werden.")
 
+    return temp
+
 #measurement_aht20() # Only needed in finished block
+
+###############################################################################
+# SENSOR BLOCK SCD40
+###############################################################################
+i2c = board.I2C()  # uses board.SCL and board.SDA
+scd4x = adafruit_scd4x.SCD4X(i2c)
+scd4x.start_periodic_measurement()
+#print("Serial number:", [hex(i) for i in scd4x.serial_number])
+
+def measurement_scd40_temp():
+    # returns cached (!) or new value if ready (new value around every 5s)
+    # returns None if sensor not ready after startup!
+    temp = scd4x.temperature
+    return temp
+
+def measurement_scd40_co2():
+    # returns cached (!) or new value if ready (new value around every 5s)
+    # returns None if sensor not ready after startup!
+    co2 = scd4x.CO2
+    return co2
+
+    #print("Humidity: %0.1f %%" % scd4x.relative_humidity)
 
 ###############################################################################
 # SENSOR BLOCK SEEED DISTANCE V2
@@ -240,16 +255,15 @@ def plot_data():
     plotpath = os.path.expanduser(dataDir) + "plot.png"
     plt.savefig(plotpath, dpi = 300)
     plt.close()
+
 #plot_data() # Only needed in finished block
 
 ###############################################################################
-#for count in range(100):
-#    print(count)
-#    measurement_aht20()
-#   measurement_TEST("TEST1", "unit")
-#    measurement_TEST("TEST2", "uni")
-#    measurement_TEST("TEST3", "un")
-#    measurement_TEST("TEST4", "u")
+for count in range(100):
+    print("------- " + str(count) + " -------")
+    print(measurement_aht20())
+    print(measurement_scd40_temp())
+    print(measurement_scd40_co2())
 #    plot_data()
-    #time.sleep(1) # Minimum time distance, how is this done? TODO!
+    time.sleep(1) # Minimum time distance, how is this done? TODO!
     #time.sleep(2)
