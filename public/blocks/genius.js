@@ -19,12 +19,12 @@
 Blockly.Blocks['start_block_genius'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField("Start - GeNIUS");
+        .appendField("Starte Experiment und initalisiere Graph");
     this.appendStatementInput("blocks")
         .setCheck(null);
 	this.appendDummyInput()
-        .appendField("Ende");
-    this.setColour(135);
+        .appendField("Beende Experiment");
+    this.setColour(220);
   }
 };
 
@@ -58,6 +58,66 @@ Blockly.Python['start_block_genius'] = function(block) {
 };
 
 /*
+ * Definition of TIME block (stolen from the gc2 project)
+ */
+Blockly.Blocks['sleep_s_genius'] = {
+	init: function() {
+		this.setColour(140);
+		this.setInputsInline(true);
+		this.setPreviousStatement(true, null);
+		this.setNextStatement(true, null);
+		this.appendValueInput('sekunden')
+			.setCheck('Number')
+			.appendField('warte');
+		this.appendDummyInput()
+			.appendField('Sekunden');
+		this.setTooltip('Warte eine gewisse Zeit in Sekunden.');
+	}
+};
+
+Blockly.Python['sleep_s_genius'] = function(block) {
+	var delayTime = Blockly.Python.valueToCode(block, 'sekunden', Blockly.Python.ORDER_ATOMIC) || '0';
+	Blockly.Python.definitions_['import_sleep'] = 'from time import sleep';
+	var code = 'sleep(' + delayTime + ')\n';
+	return code;
+};
+
+
+/*
+ * Definition of some blocks which do nothing but are there to display the programming idea
+ */
+Blockly.Blocks['stub_messen_genius'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("Lies den aktuellen Wert am Sensor ab.");
+    this.setPreviousStatement(true, null);
+	this.setNextStatement(true, null);
+    this.setColour(300);
+  }
+};
+
+Blockly.Blocks['stub_notieren_genius'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("Notiere den Wert im Graphen.");
+    this.setPreviousStatement(true, null);
+	this.setNextStatement(true, null);
+    this.setColour(300);
+  }
+};
+
+Blockly.Blocks['stub_auswerten_genius'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("Werte den Graphen aus.");
+    this.setPreviousStatement(true, null);
+	this.setNextStatement(true, null);
+    this.setColour(300);
+  }
+};
+
+
+/*
  * Definition of SENSOR TEST block
  */
 Blockly.Blocks['sensor_test_genius'] = {
@@ -65,9 +125,11 @@ Blockly.Blocks['sensor_test_genius'] = {
     this.appendDummyInput()
         .appendField("Sensor Test - GeNIUS");
     this.appendValueInput("name")
-    	.setCheck(null);
+    	.setCheck("String")
+	.appendField("Name");
     this.appendValueInput("unit")
-    	.setCheck(null);
+    	.setCheck("String")
+	.appendField("Einheit");
     this.setPreviousStatement(true, null);
 	this.setNextStatement(true, null);
     this.setColour(135);
@@ -96,10 +158,10 @@ Blockly.Python['sensor_test_genius'] = function(block) {
 Blockly.Blocks['plot_genius'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField("Erstelle Graph - GeNIUS");
+        .appendField("Trage Wert(e) in den Graphen ein");
     this.setPreviousStatement(true, null);
 	this.setNextStatement(true, null);
-    this.setColour(135);
+    this.setColour(0);
   }
 };
 
@@ -161,7 +223,7 @@ Blockly.Python['plot_genius'] = function(block) {
 Blockly.Blocks['aht20temp_genius'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField("Nutze Sensor AHT20");
+        .appendField("Speichere Wert des Sensors AHT20");
     this.setPreviousStatement(true, null);
 	this.setNextStatement(true, null);
     this.setColour(135);
