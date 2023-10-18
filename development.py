@@ -9,9 +9,9 @@ import sys
 import os
 import csv
 import random
-#from grove.i2c import Bus
-#from grove.gpio import GPIO
-#from grove.adc import ADC
+from grove.i2c import Bus
+from grove.gpio import GPIO
+from grove.adc import ADC
 
 ###############################################################################
 # START BLOCK
@@ -140,7 +140,7 @@ def measurement_distance(pin):
     #distance = 1
     return distance
 
-#measurement_distance(5)
+#measurement_distance(5) # 5 is D5 on the grove hat
 
 ###############################################################################
 # SENSOR BLOCK SEEED MOISTURE
@@ -168,7 +168,7 @@ def measurement_moisture(pin):
     #moisture = 1
     return moisture
 
-#measurement_moisture(0)
+#measurement_moisture(0) # 0 is port A0 on the grove hat
 
 ###############################################################################
 # SENSOR BLOCK TEST
@@ -243,13 +243,13 @@ def plot_data():
 #plot_data() # Only needed in finished block
 
 ###############################################################################
-for count in range(100):
-    print(count)
-    measurement_aht20()
-    measurement_TEST("TEST1", "unit")
-    measurement_TEST("TEST2", "uni")
-    measurement_TEST("TEST3", "un")
-    measurement_TEST("TEST4", "u")
-    plot_data()
+#for count in range(100):
+#    print(count)
+#    measurement_aht20()
+#   measurement_TEST("TEST1", "unit")
+#    measurement_TEST("TEST2", "uni")
+#    measurement_TEST("TEST3", "un")
+#    measurement_TEST("TEST4", "u")
+#    plot_data()
     #time.sleep(1) # Minimum time distance, how is this done? TODO!
     #time.sleep(2)
