@@ -72,7 +72,7 @@ def measurement_aht20():
         temp = 1
         return temp
     except:
-        print("Hast du den Sensor korrekt angeschlossen?")
+        print("Hast du den Sensor korrekt angeschlossen? (AHT20 an I2C)")
         print("Es konnten keine Daten aufgenommen werden.")
 
 #measurement_aht20() # Only needed in finished block
@@ -80,6 +80,7 @@ def measurement_aht20():
 ###############################################################################
 # SENSOR BLOCK SCD40
 ###############################################################################
+# TODO!!!! add try excep
 i2c = board.I2C()  # uses board.SCL and board.SDA
 scd4x = adafruit_scd4x.SCD4X(i2c)
 scd4x.start_periodic_measurement()
@@ -92,7 +93,7 @@ def measurement_scd40_temp():
         temp = scd4x.temperature
         return temp
     except:
-        print("Hast du den Sensor korrekt angeschlossen?")
+        print("Hast du den Sensor korrekt angeschlossen? (SCD40 an I2C)")
         print("Es konnten keine Daten aufgenommen werden.")
 
 
