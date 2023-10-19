@@ -100,6 +100,18 @@ This is quite easy, but a few steps need to be done:
 2. Copy the contents of the block in the `genius.js` file in `public/blocks`. To do this faster, use the `addstring` script, which ads the desired strings to the start and end of the lines. Important: since most blocks are structured in functions, the function needs to be executed at the end ob the block.
 3. Think of adding `;` at the end of every block definition.
 
+# webserver
+lighttpd server.port = 8080 (/etc/lighttpd/lighttpd.conf)
+
+install apache2
+sudo install -v -o www-data -g www-data -m 775 -d "/home/pi/blockly-web"
+sudo cp -r blockly-rpi-genius/public/* "/home/pi/blockly-web/"
+sudo chown -R www-data:www-data "/home/pi/blockly-web/"
+add this dir to apache.conf and 000-sites
+
+change ip in index (from raspberrypi.local)
+add messungen subpage and change this in the plot block path
+
 # Code refactor
 The experimental thinking is:
 1. Baue das Experiment auf und schließe die Sensoren an
