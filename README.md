@@ -112,6 +112,17 @@ add this dir to apache.conf and 000-sites
 change ip in index (from raspberrypi.local)
 add messungen subpage and change this in the plot block path
 
+apache2.conf
+<Directory /home/pi/blockly-web>
+	Options Indexes FollowSymLinks
+	AllowOverride None
+	Require all granted
+</Directory>
+
+000-default.conf
+
+	DocumentRoot /home/pi/blockly-web
+
 # Code refactor
 The experimental thinking is:
 1. Baue das Experiment auf und schließe die Sensoren an
