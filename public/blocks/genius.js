@@ -70,7 +70,7 @@ Blockly.Blocks['sleep_s_genius'] = {
 			.setCheck('Number')
 			.appendField('warte');
 		this.appendDummyInput()
-			.appendField('Sekunden');
+			.appendField('Sekunde(n)');
 		this.setTooltip('Warte eine gewisse Zeit in Sekunden.');
 	}
 };
@@ -118,55 +118,144 @@ Blockly.Blocks['stub_auswerten_genius'] = {
 
 
 /*
- * Definition of SENSOR TEST block
+ * Definition of SENSOR TEST Temperatur block
+ * It outputs always random values between 0 and 1.
  */
-Blockly.Blocks['sensor_test_genius'] = {
+Blockly.Blocks['sensor_test_temp_genius'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField("Sensor Test - GeNIUS");
-    this.appendValueInput("name")
-    	.setCheck("String")
-	.appendField("Name");
-    this.appendValueInput("unit")
-    	.setCheck("String")
-	.appendField("Einheit");
-    this.setPreviousStatement(true, null);
-	this.setNextStatement(true, null);
+		.appendField("Temperatursensor", "sens_info")
+		.appendField("Testsensor");    
+    this.setInputsInline(true);
+    this.setOutput(true, "Number");
     this.setColour(135);
+ this.setTooltip("");
+ this.setHelpUrl("");
   }
 };
 
-Blockly.Python['sensor_test_genius'] = function(block) {
-	var val_name = Blockly.Python.valueToCode(block, 'name', Blockly.Python.ORDER_ATOMIC);
-	var val_unit = Blockly.Python.valueToCode(block, 'unit', Blockly.Python.ORDER_ATOMIC);
-	var code = 	
-		'def measurement_TEST(name, unit):\n'+
-		'    csvTESTtemp = name + "values.csv"\n'+
+Blockly.Python['sensor_test_temp_genius'] = function(block) {
+	Blockly.Python.definitions_['functions_sensor_test'] = 
+		'def measurement_test():\n'+
 		'    value = random.random()\n'+
+		'    return value\n';
+	var code = 'measurement_test()';
+	return [code, Blockly.Python.ORDER_ATOMIC];
+};
+
+/*
+ * Definition of SENSOR TEST Abstand block
+ * It outputs always random values between 0 and 1.
+ */
+Blockly.Blocks['sensor_test_dist_genius'] = {
+  init: function() {
+    this.appendDummyInput()
+    	.appendField("Abstandssensor", "sens_info")
+        .appendField("Testsensor");
+    this.setInputsInline(true);
+    this.setOutput(true, "Number");
+    this.setColour(135);
+ this.setTooltip("");
+ this.setHelpUrl("");
+  }
+};
+
+Blockly.Python['sensor_test_dist_genius'] = function(block) {
+	Blockly.Python.definitions_['functions_sensor_test'] = 
+		'def measurement_test():\n'+
+		'    value = random.random()\n'+
+		'    return value\n';
+	var code = 'measurement_test()';
+	return [code, Blockly.Python.ORDER_ATOMIC];
+};
+
+/*
+ * Explicit WRITE Block
+ * This block allows explicit writes to a csv file.
+ * Careful: this has in parts the same code as the plot and write block
+ */
+Blockly.Blocks['write_explicit_genius'] = {
+	init: function() {
+		this.appendValueInput("measurement")
+			.setCheck("Number")
+			.appendField("Speichere Wert in Datei.");
+		this.setPreviousStatement(true, null);
+		this.setNextStatement(true, null);
+		this.setColour(0);
+		this.setTooltip("");
+		this.setHelpUrl("");
+	}
+};
+
+Blockly.Python['write_explicit_genius'] = function(block) {
+	var value_measurement = Blockly.Python.valueToCode(block, 'measurement',
+							 Blockly.Python.ORDER_ATOMIC);
+	if(this.getInputTargetBlock("measurement") == null) {
+		var input_kind = "unknown";
+	} else {
+		//var input_tooltip = this.getInputTargetBlock("measurement").tooltip;
+		var input_kind = this.getInputTargetBlock("measurement").getFieldValue("sens_info");
+	}
+	Blockly.Python.definitions_['functions_write_explicit'] =
+		'def write_to_csv(value, sensor):\n'+
+		'    # Check what kind of data is given to the function\n'+
+		'    if sensor == "Temperatursensor":\n'+
+		'        kind = "Temperatur"\n'+
+		'        unit = "°C"\n'+
+		'    elif sensor == "Abstandssensor":\n'+
+		'        kind = "Abstand"\n'+
+		'        unit = "cm"\n'+
+		'    elif sensor == "Feuchtigkeitssensor":\n'+
+		'        kind = "Feuchtigkeit"\n'+
+		'        unit = "% rel."\n'+
+		'    elif sensor == "Lichtsensor":\n'+
+		'        kind = "Helligkeit"\n'+
+		'        unit = "a.u."\n'+
+		'    else:\n'+
+		'        kind = "Unbekannt"\n'+
+		'        unit = "a.u."\n'+
+		'    filename = kind + ".csv"\n'+
 		'    time = dt.datetime.now().strftime("%H:%M:%S")\n'+
-		'    fileTESTtemp = os.path.expanduser(dataDir) + str(csvTESTtemp)\n'+
-		'    with open(fileTESTtemp, "a", newline="") as f:\n'+
+		'    filetemp = os.path.expanduser(dataDir) + str(filename)\n'+
+		'    with open(filetemp, "a", newline="") as f:\n'+
 		'        writer = csv.writer(f)\n'+
-		'        writer.writerow([time, value, unit, name])\n'+
-		'measurement_TEST(' + val_name + ', ' + val_unit + ') # only needed in finished block\n';
+		'        writer.writerow([time, value, unit, kind])\n';
+	var code = 
+		'write_to_csv(' + value_measurement + ', "' + input_kind + '")\n';
 	return code;
 };
 
 /*
- * Definition of PLOT block
+ * Definition of WRITE and PLOT block
+ * This is a combination block for write and plot, since this is the same for
+ * the pupils
+ * Its speciality is to obatin the sens_info value from the input block 
+ * (this HAS to be a sensor block, else it will not work) and plot the data
+ * with the correct unit and kind of sensor (see eilf statements in write_to_csv)
  */
-Blockly.Blocks['plot_genius'] = {
-  init: function() {
-    this.appendDummyInput()
-        .appendField("Trage Wert(e) in den Graphen ein");
-    this.setPreviousStatement(true, null);
-	this.setNextStatement(true, null);
-    this.setColour(0);
-  }
+Blockly.Blocks['write_plot_genius'] = {
+	init: function() {
+		this.appendValueInput("measurement")
+			.setCheck("Number")
+			.appendField("Trage Sensorwert im Graphen ein:");
+		this.setPreviousStatement(true, null);
+		this.setNextStatement(true, null);
+		this.setColour(0);
+		this.setTooltip("");
+		this.setHelpUrl("");
+	}
 };
 
-Blockly.Python['plot_genius'] = function(block) {
-	var code = 	
+Blockly.Python['write_plot_genius'] = function(block) {
+	var value_measurement = Blockly.Python.valueToCode(block, 'measurement',
+							 Blockly.Python.ORDER_ATOMIC);
+	if(this.getInputTargetBlock("measurement") == null) {
+		var input_kind = "unknown";
+	} else {
+		//var input_tooltip = this.getInputTargetBlock("measurement").tooltip;
+		var input_kind = this.getInputTargetBlock("measurement").getFieldValue("sens_info");
+	}
+	Blockly.Python.definitions_['functions_plot'] =
 		'def plot_data():\n'+
 		'    # Use every .csv in dataDir\n'+
 		'    filelist = [] # all filenames are stored in here\n'+
@@ -211,6 +300,31 @@ Blockly.Python['plot_genius'] = function(block) {
 		'    plotpath = os.path.expanduser(dataDir) + "plot.png"\n'+
 		'    plt.savefig(plotpath, dpi = 300)\n'+
 		'    plt.close()\n'+
+		'def write_to_csv(value, sensor):\n'+
+		'    # Check what kind of data is given to the function\n'+
+		'    if sensor == "Temperatursensor":\n'+
+		'        kind = "Temperatur"\n'+
+		'        unit = "°C"\n'+
+		'    elif sensor == "Abstandssensor":\n'+
+		'        kind = "Abstand"\n'+
+		'        unit = "cm"\n'+
+		'    elif sensor == "Feuchtigkeitssensor":\n'+
+		'        kind = "Feuchtigkeit"\n'+
+		'        unit = "% rel."\n'+
+		'    elif sensor == "Lichtsensor":\n'+
+		'        kind = "Helligkeit"\n'+
+		'        unit = "a.u."\n'+
+		'    else:\n'+
+		'        kind = "Unbekannt"\n'+
+		'        unit = "a.u."\n'+
+		'    filename = kind + ".csv"\n'+
+		'    time = dt.datetime.now().strftime("%H:%M:%S")\n'+
+		'    filetemp = os.path.expanduser(dataDir) + str(filename)\n'+
+		'    with open(filetemp, "a", newline="") as f:\n'+
+		'        writer = csv.writer(f)\n'+
+		'        writer.writerow([time, value, unit, kind])\n';
+	var code =
+		'write_to_csv(' + value_measurement + ', "' + input_kind + '")\n'+
 		'plot_data()\n';
 	return code;
 };
@@ -287,20 +401,33 @@ Blockly.Python['aht20temp_genius'] = function(block) {
 
 
 
+/*
+ * Definition of NEW sensor block
 
+Blockly.Blocks['sensor_new_genius'] = {
+	init: function() {
+		this.appendDummyInput()
+			.appendField("Aktueller Wert von:")
+			.appendField("Temperatursensor", "sens_info")
+			.appendField("(AHT20)");
+			//.appendField("Temperatur", "kind");
+		this.setInputsInline(true);
+		this.setOutput(true, "Number");
+		this.setColour(135);
+		this.setTooltip("");
+		this.setHelpUrl("");
+	}
+};
 
-
-
-
-
-
-
-
-
-
-
-
-
+Blockly.Python['sensor_new_genius'] = function(block) {
+	Blockly.Python.definitions_['sensor_new_function'] = 
+		'def measurement_TEST():\n'+
+		'    value = random.random()\n'+
+		'    return value\n';
+	var code = 'measurement_TEST()';
+	return [code, Blockly.Python.ORDER_ATOMIC];
+};
+*/
 
 
 

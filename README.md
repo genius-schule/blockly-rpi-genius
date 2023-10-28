@@ -122,3 +122,13 @@ Ideas how to code the blocks:
 * Graph should be created live, not only at the end
 * How to label the axis correctly?
 
+# Sensor as "variable" block
+We need the sensor as a "variable" block, since an evaluation of the raw value has to be working.
+E.g. the temperature needs to be evaluated if it is larger than a specified value.
+
+This can be done, but there is a drawback:
+The values have to be stored somehow (in this case in a csv file) to be plotted later.
+The input of the storage function is the raw value without further infomation about the unit or kind of sensor.
+But then the storage function does not know the unit of the value and does not work if there are multiple sensors, so we need additional information. 
+In this case, this is solved via an extra field, which defines a "kind" of unit. This filed is read out by the write block and evaluated.
+Keep in mind that this is quite hacky and only works on self written write blocks, which evaluate this field explicitly.

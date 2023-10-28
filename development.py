@@ -59,22 +59,12 @@ class GroveAHT20(object):
         return temperature, humidity
 
 def measurement_aht20():
-    csvaht20temp = "aht20temp.csv"
-    csvaht20humi = "aht20humi.csv" # Not implemented yet
-
     try:
         # For debugging without the seeed library comment the following two lines and uncomment below
         #aht20 = GroveAHT20()
         #temp, humi = aht20.read()
         temp = 1
-        #humi = 10
-
-        time = dt.datetime.now().strftime("%H:%M:%S")
-
-        fileaht20temp = os.path.expanduser(dataDir) + str(csvaht20temp)
-        with open(fileaht20temp, "a", newline="") as f:
-            writer = csv.writer(f)
-            writer.writerow([time, temp, "°C", "AHT20"])
+        return temp
     except:
         print("Hast du den Sensor korrekt angeschlossen?")
         print("Es konnten keine Daten aufgenommen werden.")
@@ -86,22 +76,46 @@ def measurement_aht20():
 # This only tests the graph capabilities with random values.
 # Name and unit have to be set as arguments
 ###############################################################################
-def measurement_TEST(name, unit):
-    csvTESTtemp = name + "values.csv"
-
+def measurement_test():
     value = random.random()
+    return value
+
+#measurement_test() # Only needed in finished block
+
+###############################################################################
+# SAVE VALUE BLOCK
+# Saves given value, should be implented so it writes in right file
+###############################################################################
+def write_to_csv(value, sensor):
+    # Check what kind of data is given to the function
+    if sensor == "Temperatursensor":
+        kind = "Temperatur"
+        unit = "°C"
+    elif sensor == "Abstandssensor":
+        kind = "Abstand"
+        unit = "cm"
+    elif sensor == "Feuchtigkeitssensor":
+        kind = "Feuchtigkeit"
+        unit = "% rel."
+    elif sensor == "Lichtsensor":
+        kind = "Helligkeit"
+        unit = "a.u."
+    else:
+        kind = "Unbekannt"
+        unit = "a.u."
+
+    filename = kind + ".csv"
     time = dt.datetime.now().strftime("%H:%M:%S")
 
-    fileTESTtemp = os.path.expanduser(dataDir) + str(csvTESTtemp)
-    with open(fileTESTtemp, "a", newline="") as f:
+    filetemp = os.path.expanduser(dataDir) + str(filename)
+    with open(filetemp, "a", newline="") as f:
         writer = csv.writer(f)
-        writer.writerow([time, value, unit, name])
+        writer.writerow([time, value, unit, kind])
+#write_to_csv(value_measurement, input_kind) # only in finished block
 
-#measurement_TEST("name", "unit") # Only needed in finished block
-
-###########################################################################
+###############################################################################
 # PLOTTING BLOCK
-###########################################################################
+###############################################################################
 def plot_data():
     # Use every .csv in dataDir
     filelist = [] # all filenames are stored in here
@@ -131,11 +145,11 @@ def plot_data():
         path = os.path.expanduser(dataDir) + filelist[num]
         # Read data
         data = pd.read_csv(path, delimiter = ",", header = None,
-                               names = ["time", "value", "unit", "name"])
+                               names = ["time", "value", "unit", "kindDE"])
         data["time"] = pd.to_datetime(data["time"], format = "%H:%M:%S")
         # Only first value for unit and name are used, since they
         # should stay the same
-        axs[num].set_title("Sensor " + str(data["name"][0]))
+        axs[num].set_title(str(data["kindDE"][0]))
         axs[num].set_ylabel(data["unit"][0])
         # Plot value over time
         axs[num].plot(data["time"], data["value"], marker = "x", color = colors[num])
@@ -156,11 +170,8 @@ def plot_data():
 ###############################################################################
 for count in range(100):
     print(count)
-    measurement_aht20()
-    measurement_TEST("TEST1", "unit")
-    measurement_TEST("TEST2", "uni")
-    measurement_TEST("TEST3", "un")
-    measurement_TEST("TEST4", "u")
+    write_to_csv(measurement_aht20(), "Temperatursensor")
+    write_to_csv(measurement_test(), "Abstandssensor")
     plot_data()
     #time.sleep(1) # Minimum time distance, how is this done? TODO!
     #time.sleep(2)
