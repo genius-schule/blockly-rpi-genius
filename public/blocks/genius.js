@@ -237,7 +237,7 @@ Blockly.Blocks['write_plot_genius'] = {
 	init: function() {
 		this.appendValueInput("measurement")
 			.setCheck("Number")
-			.appendField("Trage Sensorwert im Graphen ein:");
+			.appendField("Speichere Sensorwert im Graph:");
 		this.setPreviousStatement(true, null);
 		this.setNextStatement(true, null);
 		this.setColour(0);
