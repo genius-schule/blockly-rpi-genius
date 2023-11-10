@@ -25,6 +25,7 @@ Since the code is used in german schools, most sensors are implemented in german
 * [ ] Desktop files
 * [ ] Changed seeed installation file
 * [ ] Some optical changes if used productive!
+* [ ] Copy the website file into /files
 
 ## How to setup the system
 The outcome of this section should be a ready-to-use system image for the Raspberry Pi 4.
@@ -41,34 +42,7 @@ install these packages:
 sudo apt-get install python3-dev python3-gpiozero python3-websockets python3-matplotlib firefox python3-pandas
 ```
 
-## Sensors with specific blocks
-We use the <a href="https://wiki.seeedstudio.com/Grove_System/">grove system</a> by *seeed studio*. The sensors of the *grove system* are connected with the <a href="https://wiki.seeedstudio.com/Grove_Base_Hat_for_Raspberry_Pi/">Grove Base Hat</a> to the Raspberry Pi. The following sensors where implemented:
-* <a href="https://wiki.seeedstudio.com/Grove-VOC_and_eCO2_Gas_Sensor-SGP30/">Grove - VOC and eCO2 Gas Sensor(SGP30)</a>
-  * (Python-Library) <a href="https://pypi.org/project/seeed-python-sgp30/">seeed-python-sgp30</a>
-  * (Python-Library) <a href="https://github.com/Seeed-Studio/grove.py">grove.py</a>
-
-* <a href="https://wiki.seeedstudio.com/Grove-CO2_Temperature_Humidity_Sensor-SCD30/">Grove - CO2 & Temperature & Humidity Sensor (SCD30)</a>
-  * (Python-Library) <a href="https://pypi.org/project/scd30-i2c/">scd30-i2c</a>
-
-* <a href="https://wiki.seeedstudio.com/Grove-Light_Sensor/">Grove - Light Sensor</a>
-  * (Python-Library) <a href="https://github.com/Seeed-Studio/grove.py">grove.py</a>
-
-Additionally, the sensor <a href="https://www.waveshare.com/wiki/MQ-135_Gas_Sensor"> MQ-135</a> is integrated.
-
-Some examples by grove are in the examples folder `/usr/local/lib/python3.9/dist-packages/grove`.
-
-## Blockly-gPIo
-Visual programming for the Raspberry Pi with access to the GPIO and a simple browser-based simulation mode.
-
-The original blockly by google is extended to integrate the GPIOs of the Raspberry Pi. Thankfully, we didn't need to start from the beginning because 
-we found [blockly-gpio](https://github.com/carlosperate/Blockly-gPIo) from carlosperate on Github.
-
-### Dependencies
- * python3
- * python3 librarys (websockets, gpiozero)
- * webserver, if run locally
-
-### Installation
+### Old installation instruction of the GC2
 * Make sure that Raspbian 10 (Buster) has the all dependencies installed:  
 ```
   sudo apt-get install python3-dev python3-gpiozero python3-pip python3-websocket  
@@ -89,18 +63,72 @@ we found [blockly-gpio](https://github.com/carlosperate/Blockly-gPIo) from carlo
   chown -R www-data:www-data "/var/www/html/Blockly-gPIo"
   ```
 
-# Start blockly
+## Sensors with specific blocks
+We use the <a href="https://wiki.seeedstudio.com/Grove_System/">grove system</a> by *seeed studio*. The sensors of the *grove system* are connected with the <a href="https://wiki.seeedstudio.com/Grove_Base_Hat_for_Raspberry_Pi/">Grove Base Hat</a> to the Raspberry Pi. The following sensors where implemented:
+* <a href="https://wiki.seeedstudio.com/Grove-VOC_and_eCO2_Gas_Sensor-SGP30/">Grove - VOC and eCO2 Gas Sensor(SGP30)</a>
+  * (Python-Library) <a href="https://pypi.org/project/seeed-python-sgp30/">seeed-python-sgp30</a>
+  * (Python-Library) <a href="https://github.com/Seeed-Studio/grove.py">grove.py</a>
+
+* <a href="https://wiki.seeedstudio.com/Grove-CO2_Temperature_Humidity_Sensor-SCD30/">Grove - CO2 & Temperature & Humidity Sensor (SCD30)</a>
+  * (Python-Library) <a href="https://pypi.org/project/scd30-i2c/">scd30-i2c</a>
+
+* <a href="https://wiki.seeedstudio.com/Grove-Light_Sensor/">Grove - Light Sensor</a>
+  * (Python-Library) <a href="https://github.com/Seeed-Studio/grove.py">grove.py</a>
+
+Additionally, the sensor <a href="https://www.waveshare.com/wiki/MQ-135_Gas_Sensor"> MQ-135</a> is integrated.
+
+Some examples by grove are in the examples folder `/usr/local/lib/python3.9/dist-packages/grove`.
+
+## Start blockly
 Simple by executing `python3 run.py`.
 
 Then open `public/index_de.html` with a browser and chance the settings to `local` (gear button).
 
-# Writing new blocks
+## Writing new blocks
 This is quite easy, but a few steps need to be done:
 1. You can develop new blocks in the `development.py` file, since all blocks done in the GeNIUS project where developed here.
 2. Copy the contents of the block in the `genius.js` file in `public/blocks`. To do this faster, use the `addstring` script, which ads the desired strings to the start and end of the lines. Important: since most blocks are structured in functions, the function needs to be executed at the end ob the block.
 3. Think of adding `;` at the end of every block definition.
 
-# Code refactor
+## Webserver
+The blockly app can also be run on a webserver, and can be reached in the local network.
+If the end user device is connected with the WiFi of the Raspberry Pi (SSID "raspi webgui"), blockly can be reached in every browser at the adress "http://10.3.141.1/index.html".
+
+To start the webserver, several steps have to be done:
+
+1. Change the port of raspAP from 80 to 8080:
+    ```
+    /etc/lighttpd/lighttpd.conf
+    lighttpd server.port = 8080
+    ```
+
+2. install apache2: `sudo apt-get install apache2`
+
+3. Create the folders and copy the data:
+    ```
+    sudo install -v -o www-data -g www-data -m 775 -d "/home/pi/blockly-web"
+    sudo cp -r blockly-rpi-genius/public/* "/home/pi/blockly-web/"
+    sudo chown -R www-data:www-data "/home/pi/blockly-web/"
+    ```
+
+4. Change the configuration files of apache:
+    ```
+    /etc/apache2/apache2.conf
+    <Directory /home/pi/blockly-web>
+	    Options Indexes FollowSymLinks
+	    AllowOverride None
+	    Require all granted
+    </Directory>
+
+    /etc/apache2/conf-enabled/000-default.conf
+    DocumentRoot /home/pi/blockly-web
+    ```
+
+5. Change the ip of the Pi in the index.html file (from raspberrypi.local to 10.3.141.1). **TODO**
+6. Change the output of the plot and path of the csv files in the start block.
+6. Add a subpage for the measurements. **TODO**
+
+## Code refactor
 The experimental thinking is:
 1. Baue das Experiment auf und schließe die Sensoren an
 2. Lese das Thermometer ab

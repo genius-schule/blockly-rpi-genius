@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>List and Download CSV Files</title>
+</head>
+<body>
+    <h1>List of CSV Files</h1>
+    <p>Click the link below to download a file:</p>
+    <a href="messungen/plot.png" download="messungen/plot.png">Download Plot File</a>
+    <ul id="fileList"></ul>
+
+
+    <script>
+        // Specify the directory path where your CSV files are located
+        var directoryPath = "/home/niklas/noback/git/blockly-rpi-genius/public/";
+
+        // Function to list CSV files in the specified directory
+        function listCSVFiles() {
+            var fileList = document.getElementById("fileList");
+
+            // Fetch the file list from the server
+            fetch(directoryPath)
+                .then(response => response.text())
+                .then(data => {
+                    var files = data.split("\n"); // Assuming each file is on a new line
+                    files.forEach(file => {
+                        if (file.endsWith(".csv")) {
+                            var listItem = document.createElement("li");
+                            listItem.textContent = file;
+                            fileList.appendChild(listItem);
+                        }
+                    });
+                })
+                .catch(error => console.error("Error: " + error));
+        }
+
+        // Call the function to list CSV files
+        listCSVFiles();
+    </script>
+</body>
+</html>
