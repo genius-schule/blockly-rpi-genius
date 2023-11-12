@@ -19,7 +19,7 @@
 Blockly.Blocks['start_block_genius'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField("Starte Experiment und initalisiere Graph");
+        .appendField("Starte Experiment");
     this.appendStatementInput("blocks")
         .setCheck(null);
 	this.appendDummyInput()
@@ -170,9 +170,10 @@ Blockly.Python['sensor_test_dist_genius'] = function(block) {
 };
 
 /*
- * Explicit WRITE Block
+ * EXPLICIT WRITE Block
  * This block allows explicit writes to a csv file.
- * Careful: this has in parts the same code as the plot and write block
+ * Careful: this has in parts the same code as the plot and write block.
+ * In contrary to the write_plot block it only writes the value to a csv file
  */
 Blockly.Blocks['write_explicit_genius'] = {
 	init: function() {
@@ -188,8 +189,11 @@ Blockly.Blocks['write_explicit_genius'] = {
 };
 
 Blockly.Python['write_explicit_genius'] = function(block) {
+	// get the value which is put into the block
 	var value_measurement = Blockly.Python.valueToCode(block, 'measurement',
 							 Blockly.Python.ORDER_ATOMIC);
+	// get the content of the "sens_info" filed of the sensor blocks to evaluate
+	// it is evaluted by the elif statements to set unit and kind of sensor
 	if(this.getInputTargetBlock("measurement") == null) {
 		var input_kind = "unknown";
 	} else {
@@ -247,6 +251,7 @@ Blockly.Blocks['write_plot_genius'] = {
 };
 
 Blockly.Python['write_plot_genius'] = function(block) {
+	// see documentation of the write explicit block
 	var value_measurement = Blockly.Python.valueToCode(block, 'measurement',
 							 Blockly.Python.ORDER_ATOMIC);
 	if(this.getInputTargetBlock("measurement") == null) {
@@ -345,7 +350,7 @@ Blockly.Blocks['aht20temp_genius'] = {
 };
 
 Blockly.Python['aht20temp_genius'] = function(block) {
-	var code =
+	Blockly.Pyhton.definitions_['functions_aht20temp'] =
 		'# copied from the example\n'+
 		'class GroveAHT20(object):\n'+
 		'    def __init__(self, address=0x38, bus=None):\n'+
@@ -353,6 +358,7 @@ Blockly.Python['aht20temp_genius'] = function(block) {
 		'        self.address = address\n'+
 		'        # I2C bus\n'+
 		'        self.bus = Bus(bus)\n'+
+		'        #humi = 10\n'+
 		'    def read(self):\n'+
 		'        self.bus.write_i2c_block_data(self.address, 0x00, [0xac, 0x33, 0x00])\n'+
 		'        # measurement duration < 16 ms\n'+
@@ -376,184 +382,12 @@ Blockly.Python['aht20temp_genius'] = function(block) {
 		'    csvaht20temp = "aht20temp.csv"\n'+
 		'    csvaht20humi = "aht20humi.csv" # Not implemented yet\n'+
 		'    try:\n'+
-		'        # For debugging without the seeed library comment the following two lines and uncomment below\n'+
-		'        #aht20 = GroveAHT20()\n'+
 		'        #temp, humi = aht20.read()\n'+
 		'        temp = 1\n'+
-		'        #humi = 10\n'+
-		'        time = dt.datetime.now().strftime("%H:%M:%S")\n'+
-		'        fileaht20temp = os.path.expanduser(dataDir) + str(csvaht20temp)\n'+
-		'        with open(fileaht20temp, "a", newline="") as f:\n'+
-		'            writer = csv.writer(f)\n'+
-		'            writer.writerow([time, temp, "°C", "AHT20"])\n'+
 		'    except:\n'+
 		'        print("Hast du den Sensor korrekt angeschlossen?")\n'+
 		'        print("Es konnten keine Daten aufgenommen werden.")\n'+
-		'measurement_aht20() # only needed in finished block\n';
-	return code;
-};
-
-
-
-
-
-
-
-
-
-/*
- * Definition of NEW sensor block
-
-Blockly.Blocks['sensor_new_genius'] = {
-	init: function() {
-		this.appendDummyInput()
-			.appendField("Aktueller Wert von:")
-			.appendField("Temperatursensor", "sens_info")
-			.appendField("(AHT20)");
-			//.appendField("Temperatur", "kind");
-		this.setInputsInline(true);
-		this.setOutput(true, "Number");
-		this.setColour(135);
-		this.setTooltip("");
-		this.setHelpUrl("");
-	}
-};
-
-Blockly.Python['sensor_new_genius'] = function(block) {
-	Blockly.Python.definitions_['sensor_new_function'] = 
-		'def measurement_TEST():\n'+
-		'    value = random.random()\n'+
-		'    return value\n';
-	var code = 'measurement_TEST()';
-	return [code, Blockly.Python.ORDER_ATOMIC];
-};
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/**
- * sensor definitions for aht20
- * currently only the temperature is used
- * to obtain the humidity, another block is needed
- * this form is code is absolutely stupid, but there are no other options :/
- */
-Blockly.Blocks['use_old_aht20'] = {
-	init: function() {
-		this.appendDummyInput()
-			.appendField("Benutze Sensor");
-		this.appendDummyInput()
-			.appendField("OLD AHT20 (Temperatur)");
-		this.appendStatementInput("blocks")
-			.setCheck(null);
-		this.appendDummyInput()
-			.appendField("Ende der Benutzung");
-		this.setPreviousStatement(true, null);
-		this.setNextStatement(true, null);
-		this.setColour(105);
-	}
-};
-
-Blockly.Python['use_old_aht20'] = function(block) {
-	Blockly.Python.definitions_['libs_aht20'] = 'import time \n'+
-		'from grove.i2c import Bus \n';
-	Blockly.Python.definitions_['class_aht20'] ='# copied from the example\n'+
-		'class GroveTemperatureHumidityAHT20(object):\n'+
-    		'	def __init__(self, address=0x38, bus=None):\n'+
-        	'		self.address = address\n'+
-        	'		# I2C bus\n'+
-        	'		self.bus = Bus(bus)\n'+
-    		'	def read(self):\n'+
-        	'		self.bus.write_i2c_block_data(self.address, 0x00, [0xac, 0x33, 0x00])\n'+
-        	'		# measurement duration < 16 ms\n'+
-        	'		time.sleep(0.016)\n'+
-        	'		data = self.bus.read_i2c_block_data(self.address, 0x00, 6)\n'+
-        	'		humidity = data[1]\n'+
-        	'		humidity <<= 8\n'+
-        	'		humidity += data[2]\n'+
-        	'		humidity <<= 4\n'+
-        	'		humidity += (data[3] >> 4)\n'+
-        	'		humidity /= 1048576.0\n'+
-        	'		humidity *= 100\n'+
-        	'		temperature = data[3] & 0x0f\n'+
-        	'		temperature <<= 8\n'+
-        	'		temperature += data[4]\n'+
-        	'		temperature <<= 8\n'+
-        	'		temperature += data[5]\n'+
-        	'		temperature = temperature / 1048576.0*200.0-50.0  # Convert to Celsius\n'+
-        	'		return temperature, humidity\n';
-	Blockly.Python.definitions_['init_aht20'] = 'aht20InfoSet = ["aht20", [], [], 0, 0]\n';
-		//above is a dummy which needs to be changed
-	Blockly.Python.definitions_['meas_aht20'] = 'sensaht20 = GroveTemperatureHumidityAHT20()\n'+
-		'temperature, humidity  = sensaht20.read()\n'+
-		'print("Temperature in Celsius is {:.2f} C".format(temperature))\n'+
-		'print("Relative Humidity is {:.2f} %".format(humidity))\n';
-	var statements_blocks = Blockly.Python.statementToCode(block, 'blocks');
-	var code = 'verwendeterSensor = aht20InfoSet\n'+
-		'for i in range(1):\n'+
-		'	pass\n'+
-		statements_blocks+
-		'verwendeterSensor = 0\n';
+	var code = 'measurement_aht20()\n';
 	return code;
 };
 
