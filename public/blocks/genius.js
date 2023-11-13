@@ -386,7 +386,7 @@ Blockly.Python['aht20temp_genius'] = function(block) {
 		'        temp = 1\n'+
 		'    except:\n'+
 		'        print("Hast du den Sensor korrekt angeschlossen?")\n'+
-		'        print("Es konnten keine Daten aufgenommen werden.")\n'+
+		'        print("Es konnten keine Daten aufgenommen werden.")\n';
 	var code = 'measurement_aht20()\n';
 	return code;
 };
