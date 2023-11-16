@@ -19,11 +19,11 @@
 Blockly.Blocks['start_block_genius'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField("Starte Experiment");
+        .appendField("Starte Messungen");
     this.appendStatementInput("blocks")
         .setCheck(null);
 	this.appendDummyInput()
-        .appendField("Beende Experiment");
+        .appendField("Beende Messungen");
     this.setColour(220);
   }
 };
@@ -124,11 +124,11 @@ Blockly.Blocks['stub_auswerten_genius'] = {
 Blockly.Blocks['sensor_test_temp_genius'] = {
   init: function() {
     this.appendDummyInput()
-		.appendField("Temperatursensor", "sens_info")
-		.appendField("Testsensor");    
+	  	.appendField("mit Sensor XYZ erfasste")
+		.appendField("Temperatur", "sens_info");
     this.setInputsInline(true);
     this.setOutput(true, "Number");
-    this.setColour(135);
+    this.setColour(300);
  this.setTooltip("");
  this.setHelpUrl("");
   }
@@ -150,11 +150,11 @@ Blockly.Python['sensor_test_temp_genius'] = function(block) {
 Blockly.Blocks['sensor_test_dist_genius'] = {
   init: function() {
     this.appendDummyInput()
-    	.appendField("Abstandssensor", "sens_info")
-        .appendField("Testsensor");
+	.appendField("mit Sensor XYZ erfasste")
+    	.appendField("Distanz", "sens_info");
     this.setInputsInline(true);
     this.setOutput(true, "Number");
-    this.setColour(135);
+    this.setColour(300);
  this.setTooltip("");
  this.setHelpUrl("");
   }
@@ -179,10 +179,10 @@ Blockly.Blocks['write_explicit_genius'] = {
 	init: function() {
 		this.appendValueInput("measurement")
 			.setCheck("Number")
-			.appendField("Speichere Wert in Datei.");
+			.appendField("Speichere in Datei:");
 		this.setPreviousStatement(true, null);
 		this.setNextStatement(true, null);
-		this.setColour(0);
+		this.setColour(240);
 		this.setTooltip("");
 		this.setHelpUrl("");
 	}
@@ -203,16 +203,16 @@ Blockly.Python['write_explicit_genius'] = function(block) {
 	Blockly.Python.definitions_['functions_write_explicit'] =
 		'def write_to_csv(value, sensor):\n'+
 		'    # Check what kind of data is given to the function\n'+
-		'    if sensor == "Temperatursensor":\n'+
+		'    if sensor == "Temperatur":\n'+
 		'        kind = "Temperatur"\n'+
 		'        unit = "°C"\n'+
-		'    elif sensor == "Abstandssensor":\n'+
+		'    elif sensor == "Dinstanz":\n'+
 		'        kind = "Abstand"\n'+
 		'        unit = "cm"\n'+
-		'    elif sensor == "Feuchtigkeitssensor":\n'+
+		'    elif sensor == "Feuchtigkeit":\n'+
 		'        kind = "Feuchtigkeit"\n'+
 		'        unit = "% rel."\n'+
-		'    elif sensor == "Lichtsensor":\n'+
+		'    elif sensor == "Lichtstärke":\n'+
 		'        kind = "Helligkeit"\n'+
 		'        unit = "a.u."\n'+
 		'    else:\n'+
@@ -241,10 +241,10 @@ Blockly.Blocks['write_plot_genius'] = {
 	init: function() {
 		this.appendValueInput("measurement")
 			.setCheck("Number")
-			.appendField("Speichere Sensorwert im Graph:");
+			.appendField("Trage in den Graphen ein:");
 		this.setPreviousStatement(true, null);
 		this.setNextStatement(true, null);
-		this.setColour(0);
+		this.setColour(240);
 		this.setTooltip("");
 		this.setHelpUrl("");
 	}
