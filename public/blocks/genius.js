@@ -19,11 +19,11 @@
 Blockly.Blocks['start_block_genius'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField("Starte Experiment und initalisiere Graph");
+        .appendField("Starte Messungen");
     this.appendStatementInput("blocks")
         .setCheck(null);
 	this.appendDummyInput()
-        .appendField("Beende Experiment");
+        .appendField("Beende Messungen");
     this.setColour(220);
   }
 };
@@ -70,7 +70,7 @@ Blockly.Blocks['sleep_s_genius'] = {
 			.setCheck('Number')
 			.appendField('warte');
 		this.appendDummyInput()
-			.appendField('Sekunden');
+			.appendField('Sekunde(n)');
 		this.setTooltip('Warte eine gewisse Zeit in Sekunden.');
 	}
 };
@@ -118,55 +118,149 @@ Blockly.Blocks['stub_auswerten_genius'] = {
 
 
 /*
- * Definition of SENSOR TEST block
+ * Definition of SENSOR TEST Temperatur block
+ * It outputs always random values between 0 and 1.
  */
-Blockly.Blocks['sensor_test_genius'] = {
+Blockly.Blocks['sensor_test_temp_genius'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField("Sensor Test - GeNIUS");
-    this.appendValueInput("name")
-    	.setCheck("String")
-	.appendField("Name");
-    this.appendValueInput("unit")
-    	.setCheck("String")
-	.appendField("Einheit");
-    this.setPreviousStatement(true, null);
-	this.setNextStatement(true, null);
-    this.setColour(135);
+	  	.appendField("mit Sensor XYZ erfasste")
+		.appendField("Temperatur", "sens_info");
+    this.setInputsInline(true);
+    this.setOutput(true, "Number");
+    this.setColour(300);
+ this.setTooltip("");
+ this.setHelpUrl("");
   }
 };
 
-Blockly.Python['sensor_test_genius'] = function(block) {
-	var val_name = Blockly.Python.valueToCode(block, 'name', Blockly.Python.ORDER_ATOMIC);
-	var val_unit = Blockly.Python.valueToCode(block, 'unit', Blockly.Python.ORDER_ATOMIC);
-	var code = 	
-		'def measurement_TEST(name, unit):\n'+
-		'    csvTESTtemp = name + "values.csv"\n'+
+Blockly.Python['sensor_test_temp_genius'] = function(block) {
+	Blockly.Python.definitions_['functions_sensor_test'] = 
+		'def measurement_test():\n'+
 		'    value = random.random()\n'+
+		'    return value\n';
+	var code = 'measurement_test()';
+	return [code, Blockly.Python.ORDER_ATOMIC];
+};
+
+/*
+ * Definition of SENSOR TEST Abstand block
+ * It outputs always random values between 0 and 1.
+ */
+Blockly.Blocks['sensor_test_dist_genius'] = {
+  init: function() {
+    this.appendDummyInput()
+	.appendField("mit Sensor XYZ erfasste")
+    	.appendField("Distanz", "sens_info");
+    this.setInputsInline(true);
+    this.setOutput(true, "Number");
+    this.setColour(300);
+ this.setTooltip("");
+ this.setHelpUrl("");
+  }
+};
+
+Blockly.Python['sensor_test_dist_genius'] = function(block) {
+	Blockly.Python.definitions_['functions_sensor_test'] = 
+		'def measurement_test():\n'+
+		'    value = random.random()\n'+
+		'    return value\n';
+	var code = 'measurement_test()';
+	return [code, Blockly.Python.ORDER_ATOMIC];
+};
+
+/*
+ * EXPLICIT WRITE Block
+ * This block allows explicit writes to a csv file.
+ * Careful: this has in parts the same code as the plot and write block.
+ * In contrary to the write_plot block it only writes the value to a csv file
+ */
+Blockly.Blocks['write_explicit_genius'] = {
+	init: function() {
+		this.appendValueInput("measurement")
+			.setCheck("Number")
+			.appendField("Speichere in Datei:");
+		this.setPreviousStatement(true, null);
+		this.setNextStatement(true, null);
+		this.setColour(240);
+		this.setTooltip("");
+		this.setHelpUrl("");
+	}
+};
+
+Blockly.Python['write_explicit_genius'] = function(block) {
+	// get the value which is put into the block
+	var value_measurement = Blockly.Python.valueToCode(block, 'measurement',
+							 Blockly.Python.ORDER_ATOMIC);
+	// get the content of the "sens_info" filed of the sensor blocks to evaluate
+	// it is evaluted by the elif statements to set unit and kind of sensor
+	if(this.getInputTargetBlock("measurement") == null) {
+		var input_kind = "unknown";
+	} else {
+		//var input_tooltip = this.getInputTargetBlock("measurement").tooltip;
+		var input_kind = this.getInputTargetBlock("measurement").getFieldValue("sens_info");
+	}
+	Blockly.Python.definitions_['functions_write_explicit'] =
+		'def write_to_csv(value, sensor):\n'+
+		'    # Check what kind of data is given to the function\n'+
+		'    if sensor == "Temperatur":\n'+
+		'        kind = "Temperatur"\n'+
+		'        unit = "°C"\n'+
+		'    elif sensor == "Dinstanz":\n'+
+		'        kind = "Abstand"\n'+
+		'        unit = "cm"\n'+
+		'    elif sensor == "Feuchtigkeit":\n'+
+		'        kind = "Feuchtigkeit"\n'+
+		'        unit = "% rel."\n'+
+		'    elif sensor == "Lichtstärke":\n'+
+		'        kind = "Helligkeit"\n'+
+		'        unit = "a.u."\n'+
+		'    else:\n'+
+		'        kind = "Unbekannt"\n'+
+		'        unit = "a.u."\n'+
+		'    filename = kind + ".csv"\n'+
 		'    time = dt.datetime.now().strftime("%H:%M:%S")\n'+
-		'    fileTESTtemp = os.path.expanduser(dataDir) + str(csvTESTtemp)\n'+
-		'    with open(fileTESTtemp, "a", newline="") as f:\n'+
+		'    filetemp = os.path.expanduser(dataDir) + str(filename)\n'+
+		'    with open(filetemp, "a", newline="") as f:\n'+
 		'        writer = csv.writer(f)\n'+
-		'        writer.writerow([time, value, unit, name])\n'+
-		'measurement_TEST(' + val_name + ', ' + val_unit + ') # only needed in finished block\n';
+		'        writer.writerow([time, value, unit, kind])\n';
+	var code = 
+		'write_to_csv(' + value_measurement + ', "' + input_kind + '")\n';
 	return code;
 };
 
 /*
- * Definition of PLOT block
+ * Definition of WRITE and PLOT block
+ * This is a combination block for write and plot, since this is the same for
+ * the pupils
+ * Its speciality is to obatin the sens_info value from the input block 
+ * (this HAS to be a sensor block, else it will not work) and plot the data
+ * with the correct unit and kind of sensor (see eilf statements in write_to_csv)
  */
-Blockly.Blocks['plot_genius'] = {
-  init: function() {
-    this.appendDummyInput()
-        .appendField("Trage Wert(e) in den Graphen ein");
-    this.setPreviousStatement(true, null);
-	this.setNextStatement(true, null);
-    this.setColour(0);
-  }
+Blockly.Blocks['write_plot_genius'] = {
+	init: function() {
+		this.appendValueInput("measurement")
+			.setCheck("Number")
+			.appendField("Trage in den Graphen ein:");
+		this.setPreviousStatement(true, null);
+		this.setNextStatement(true, null);
+		this.setColour(240);
+		this.setTooltip("");
+		this.setHelpUrl("");
+	}
 };
 
-Blockly.Python['plot_genius'] = function(block) {
-	var code = 	
+Blockly.Python['write_plot_genius'] = function(block) {
+	// see documentation of the write explicit block
+	var value_measurement = Blockly.Python.valueToCode(block, 'measurement',
+							 Blockly.Python.ORDER_ATOMIC);
+	if(this.getInputTargetBlock("measurement") == null) {
+		var input_kind = "unknown";
+	} else {
+		//var input_tooltip = this.getInputTargetBlock("measurement").tooltip;
+		var input_kind = this.getInputTargetBlock("measurement").getFieldValue("sens_info");
+	}
+	Blockly.Python.definitions_['functions_plot'] =
 		'def plot_data():\n'+
 		'    # Use every .csv in dataDir\n'+
 		'    filelist = [] # all filenames are stored in here\n'+
@@ -211,6 +305,31 @@ Blockly.Python['plot_genius'] = function(block) {
 		'    plotpath = os.path.expanduser(dataDir) + "plot.png"\n'+
 		'    plt.savefig(plotpath, dpi = 300)\n'+
 		'    plt.close()\n'+
+		'def write_to_csv(value, sensor):\n'+
+		'    # Check what kind of data is given to the function\n'+
+		'    if sensor == "Temperatursensor":\n'+
+		'        kind = "Temperatur"\n'+
+		'        unit = "°C"\n'+
+		'    elif sensor == "Abstandssensor":\n'+
+		'        kind = "Abstand"\n'+
+		'        unit = "cm"\n'+
+		'    elif sensor == "Feuchtigkeitssensor":\n'+
+		'        kind = "Feuchtigkeit"\n'+
+		'        unit = "% rel."\n'+
+		'    elif sensor == "Lichtsensor":\n'+
+		'        kind = "Helligkeit"\n'+
+		'        unit = "a.u."\n'+
+		'    else:\n'+
+		'        kind = "Unbekannt"\n'+
+		'        unit = "a.u."\n'+
+		'    filename = kind + ".csv"\n'+
+		'    time = dt.datetime.now().strftime("%H:%M:%S")\n'+
+		'    filetemp = os.path.expanduser(dataDir) + str(filename)\n'+
+		'    with open(filetemp, "a", newline="") as f:\n'+
+		'        writer = csv.writer(f)\n'+
+		'        writer.writerow([time, value, unit, kind])\n';
+	var code =
+		'write_to_csv(' + value_measurement + ', "' + input_kind + '")\n'+
 		'plot_data()\n';
 	return code;
 };
@@ -231,7 +350,7 @@ Blockly.Blocks['aht20temp_genius'] = {
 };
 
 Blockly.Python['aht20temp_genius'] = function(block) {
-	var code =
+	Blockly.Pyhton.definitions_['functions_aht20temp'] =
 		'# copied from the example\n'+
 		'class GroveAHT20(object):\n'+
 		'    def __init__(self, address=0x38, bus=None):\n'+
@@ -239,6 +358,7 @@ Blockly.Python['aht20temp_genius'] = function(block) {
 		'        self.address = address\n'+
 		'        # I2C bus\n'+
 		'        self.bus = Bus(bus)\n'+
+		'        #humi = 10\n'+
 		'    def read(self):\n'+
 		'        self.bus.write_i2c_block_data(self.address, 0x00, [0xac, 0x33, 0x00])\n'+
 		'        # measurement duration < 16 ms\n'+
@@ -262,171 +382,12 @@ Blockly.Python['aht20temp_genius'] = function(block) {
 		'    csvaht20temp = "aht20temp.csv"\n'+
 		'    csvaht20humi = "aht20humi.csv" # Not implemented yet\n'+
 		'    try:\n'+
-		'        # For debugging without the seeed library comment the following two lines and uncomment below\n'+
-		'        #aht20 = GroveAHT20()\n'+
 		'        #temp, humi = aht20.read()\n'+
 		'        temp = 1\n'+
-		'        #humi = 10\n'+
-		'        time = dt.datetime.now().strftime("%H:%M:%S")\n'+
-		'        fileaht20temp = os.path.expanduser(dataDir) + str(csvaht20temp)\n'+
-		'        with open(fileaht20temp, "a", newline="") as f:\n'+
-		'            writer = csv.writer(f)\n'+
-		'            writer.writerow([time, temp, "°C", "AHT20"])\n'+
 		'    except:\n'+
 		'        print("Hast du den Sensor korrekt angeschlossen?")\n'+
-		'        print("Es konnten keine Daten aufgenommen werden.")\n'+
-		'measurement_aht20() # only needed in finished block\n';
-	return code;
-};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/**
- * sensor definitions for aht20
- * currently only the temperature is used
- * to obtain the humidity, another block is needed
- * this form is code is absolutely stupid, but there are no other options :/
- */
-Blockly.Blocks['use_old_aht20'] = {
-	init: function() {
-		this.appendDummyInput()
-			.appendField("Benutze Sensor");
-		this.appendDummyInput()
-			.appendField("OLD AHT20 (Temperatur)");
-		this.appendStatementInput("blocks")
-			.setCheck(null);
-		this.appendDummyInput()
-			.appendField("Ende der Benutzung");
-		this.setPreviousStatement(true, null);
-		this.setNextStatement(true, null);
-		this.setColour(105);
-	}
-};
-
-Blockly.Python['use_old_aht20'] = function(block) {
-	Blockly.Python.definitions_['libs_aht20'] = 'import time \n'+
-		'from grove.i2c import Bus \n';
-	Blockly.Python.definitions_['class_aht20'] ='# copied from the example\n'+
-		'class GroveTemperatureHumidityAHT20(object):\n'+
-    		'	def __init__(self, address=0x38, bus=None):\n'+
-        	'		self.address = address\n'+
-        	'		# I2C bus\n'+
-        	'		self.bus = Bus(bus)\n'+
-    		'	def read(self):\n'+
-        	'		self.bus.write_i2c_block_data(self.address, 0x00, [0xac, 0x33, 0x00])\n'+
-        	'		# measurement duration < 16 ms\n'+
-        	'		time.sleep(0.016)\n'+
-        	'		data = self.bus.read_i2c_block_data(self.address, 0x00, 6)\n'+
-        	'		humidity = data[1]\n'+
-        	'		humidity <<= 8\n'+
-        	'		humidity += data[2]\n'+
-        	'		humidity <<= 4\n'+
-        	'		humidity += (data[3] >> 4)\n'+
-        	'		humidity /= 1048576.0\n'+
-        	'		humidity *= 100\n'+
-        	'		temperature = data[3] & 0x0f\n'+
-        	'		temperature <<= 8\n'+
-        	'		temperature += data[4]\n'+
-        	'		temperature <<= 8\n'+
-        	'		temperature += data[5]\n'+
-        	'		temperature = temperature / 1048576.0*200.0-50.0  # Convert to Celsius\n'+
-        	'		return temperature, humidity\n';
-	Blockly.Python.definitions_['init_aht20'] = 'aht20InfoSet = ["aht20", [], [], 0, 0]\n';
-		//above is a dummy which needs to be changed
-	Blockly.Python.definitions_['meas_aht20'] = 'sensaht20 = GroveTemperatureHumidityAHT20()\n'+
-		'temperature, humidity  = sensaht20.read()\n'+
-		'print("Temperature in Celsius is {:.2f} C".format(temperature))\n'+
-		'print("Relative Humidity is {:.2f} %".format(humidity))\n';
-	var statements_blocks = Blockly.Python.statementToCode(block, 'blocks');
-	var code = 'verwendeterSensor = aht20InfoSet\n'+
-		'for i in range(1):\n'+
-		'	pass\n'+
-		statements_blocks+
-		'verwendeterSensor = 0\n';
+		'        print("Es konnten keine Daten aufgenommen werden.")\n';
+	var code = 'measurement_aht20()\n';
 	return code;
 };
 

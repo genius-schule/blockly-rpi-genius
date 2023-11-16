@@ -41,8 +41,41 @@ install these packages:
 ```
 sudo apt-get install python3-dev python3-gpiozero python3-websockets python3-matplotlib firefox python3-pandas
 ```
+for support of the SCD40 sensor:
+```
+pip3 install adafruit-circuitpython-scd4x
+```
 
-### Old installation instruction of the GC2
+## Sensors with specific blocks
+We use the <a href="https://wiki.seeedstudio.com/Grove_System/">grove system</a> by *seeed studio*. The sensors of the *grove system* are connected with the <a href="https://wiki.seeedstudio.com/Grove_Base_Hat_for_Raspberry_Pi/">Grove Base Hat</a> to the Raspberry Pi. The following sensors where implemented:
+* <a href="https://wiki.seeedstudio.com/Grove-VOC_and_eCO2_Gas_Sensor-SGP30/">Grove - VOC and eCO2 Gas Sensor(SGP30)</a>
+  * (Python-Library) <a href="https://pypi.org/project/seeed-python-sgp30/">seeed-python-sgp30</a>
+  * (Python-Library) <a href="https://github.com/Seeed-Studio/grove.py">grove.py</a>
+
+* <a href="https://wiki.seeedstudio.com/Grove-CO2_Temperature_Humidity_Sensor-SCD30/">Grove - CO2 & Temperature & Humidity Sensor (SCD30)</a>
+  * (Python-Library) <a href="https://pypi.org/project/scd30-i2c/">scd30-i2c</a>
+
+* <a href="https://wiki.seeedstudio.com/Grove-Light_Sensor/">Grove - Light Sensor</a>
+  * (Python-Library) <a href="https://github.com/Seeed-Studio/grove.py">grove.py</a>
+
+Additionally, the sensor <a href="https://www.waveshare.com/wiki/MQ-135_Gas_Sensor"> MQ-135</a> is integrated.
+
+Some examples by grove are in the examples folder `/usr/local/lib/python3.9/dist-packages/grove`.
+
+## Old installation instruction of the GC2
+
+### Blockly-gPIo
+Visual programming for the Raspberry Pi with access to the GPIO and a simple browser-based simulation mode.
+
+The original blockly by google is extended to integrate the GPIOs of the Raspberry Pi. Thankfully, we didn't need to start from the beginning because 
+we found [blockly-gpio](https://github.com/carlosperate/Blockly-gPIo) from carlosperate on Github.
+
+### Dependencies
+ * python3
+ * python3 librarys (websockets, gpiozero)
+ * webserver, if run locally
+
+### Installation
 * Make sure that Raspbian 10 (Buster) has the all dependencies installed:  
 ```
   sudo apt-get install python3-dev python3-gpiozero python3-pip python3-websocket  
@@ -62,22 +95,6 @@ sudo apt-get install python3-dev python3-gpiozero python3-websockets python3-mat
   cp -r Blockly-gPIo/public/* "/var/www/html/Blockly-gPIo"
   chown -R www-data:www-data "/var/www/html/Blockly-gPIo"
   ```
-
-## Sensors with specific blocks
-We use the <a href="https://wiki.seeedstudio.com/Grove_System/">grove system</a> by *seeed studio*. The sensors of the *grove system* are connected with the <a href="https://wiki.seeedstudio.com/Grove_Base_Hat_for_Raspberry_Pi/">Grove Base Hat</a> to the Raspberry Pi. The following sensors where implemented:
-* <a href="https://wiki.seeedstudio.com/Grove-VOC_and_eCO2_Gas_Sensor-SGP30/">Grove - VOC and eCO2 Gas Sensor(SGP30)</a>
-  * (Python-Library) <a href="https://pypi.org/project/seeed-python-sgp30/">seeed-python-sgp30</a>
-  * (Python-Library) <a href="https://github.com/Seeed-Studio/grove.py">grove.py</a>
-
-* <a href="https://wiki.seeedstudio.com/Grove-CO2_Temperature_Humidity_Sensor-SCD30/">Grove - CO2 & Temperature & Humidity Sensor (SCD30)</a>
-  * (Python-Library) <a href="https://pypi.org/project/scd30-i2c/">scd30-i2c</a>
-
-* <a href="https://wiki.seeedstudio.com/Grove-Light_Sensor/">Grove - Light Sensor</a>
-  * (Python-Library) <a href="https://github.com/Seeed-Studio/grove.py">grove.py</a>
-
-Additionally, the sensor <a href="https://www.waveshare.com/wiki/MQ-135_Gas_Sensor"> MQ-135</a> is integrated.
-
-Some examples by grove are in the examples folder `/usr/local/lib/python3.9/dist-packages/grove`.
 
 ## Start blockly
 Simple by executing `python3 run.py`.
@@ -150,3 +167,13 @@ Ideas how to code the blocks:
 * Graph should be created live, not only at the end
 * How to label the axis correctly?
 
+# Sensor as "variable" block
+We need the sensor as a "variable" block, since an evaluation of the raw value has to be working.
+E.g. the temperature needs to be evaluated if it is larger than a specified value.
+
+This can be done, but there is a drawback:
+The values have to be stored somehow (in this case in a csv file) to be plotted later.
+The input of the storage function is the raw value without further infomation about the unit or kind of sensor.
+But then the storage function does not know the unit of the value and does not work if there are multiple sensors, so we need additional information. 
+In this case, this is solved via an extra field, which defines a "kind" of unit. This filed is read out by the write block and evaluated.
+Keep in mind that this is quite hacky and only works on self written write blocks, which evaluate this field explicitly.
