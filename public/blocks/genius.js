@@ -39,7 +39,10 @@ Blockly.Python['start_block_genius'] = function(block) {
 		'import os\n'+
 		'import csv\n'+
 		'import random\n'+
-		'#from grove.i2c import Bus\n';
+		'import adafruit_scd4x\n'+
+		'#from grove.i2c import Bus\n'+
+		'#from grove.gpio import GPIO\n'+
+		'#from grove.adc import ADC\n';
 	Blockly.Python.definitions_['code_start_block_genius'] =
 		'# Data directory for saving measurements and graphs\n'+
 		'dataDir = "~/blockly-web/messungen/"\n'+
@@ -338,19 +341,22 @@ Blockly.Python['write_plot_genius'] = function(block) {
  * sensor definitions for aht20
  * currently only the temperature is used
  * to obtain the humidity, another block is needed
- */
+*/
+
 Blockly.Blocks['aht20temp_genius'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField("Speichere Wert des Sensors AHT20");
-    this.setPreviousStatement(true, null);
-	this.setNextStatement(true, null);
-    this.setColour(135);
+        .appendField("mit Sensor AHT20 erfasste")
+	.appendField("Temperatur", "sens_info");
+    this.setInputsInline(true);
+    this.setOutput(true, "Number");
+    this.setColour(300);
   }
 };
 
+
 Blockly.Python['aht20temp_genius'] = function(block) {
-	Blockly.Pyhton.definitions_['functions_aht20temp'] =
+	Blockly.Python.definitions_['functions_aht20temp'] =
 		'# copied from the example\n'+
 		'class GroveAHT20(object):\n'+
 		'    def __init__(self, address=0x38, bus=None):\n'+
@@ -384,10 +390,45 @@ Blockly.Python['aht20temp_genius'] = function(block) {
 		'    try:\n'+
 		'        #temp, humi = aht20.read()\n'+
 		'        temp = 1\n'+
+		'	 return temp\n'+
 		'    except:\n'+
 		'        print("Hast du den Sensor korrekt angeschlossen?")\n'+
 		'        print("Es konnten keine Daten aufgenommen werden.")\n';
-	var code = 'measurement_aht20()\n';
-	return code;
+	var code = 'measurement_aht20()';
+	return [code, Blockly.Python.ORDER_ATOMIC];
+};
+
+/**
+ * sensor definitions for scd40
+ * currently only the temperature is used
+ * to obtain the co2 or humidity another block is needed
+*/ 
+Blockly.Blocks['scd40temp_genius'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("mit Sensor SCD40 erfasste")
+	.appendField("Temperatur", "sens_info");
+    this.setInputsInline(true);
+    this.setOutput(true, "Number");
+    this.setColour(300);
+  }
+};
+
+Blockly.Python['scd40temp_genius'] = function(block) {
+	Blockly.Python.definitions_['functions_scd40temp'] =
+		'i2c = board.I2C()  # uses board.SCL and board.SDA\n'+
+		'scd4x = adafruit_scd4x.SCD4X(i2c)\n'+
+		'scd4x.start_periodic_measurement()\n'+
+		'def measurement_scd40_temp():\n'+
+		'    # returns cached (!) or new value if ready (new value around every 5s)\n'+
+		'    # returns None if sensor not ready after startup!\n'+
+		'    try:\n'+
+		'        temp = scd4x.temperature\n'+
+		'        return temp\n'+
+		'    except:\n'+
+		'        print("Hast du den Sensor korrekt angeschlossen?")\n'+
+		'        print("Es konnten keine Daten aufgenommen werden.")\n';
+	var code = 'measurement_scd40_temp()';
+	return [code, Blockly.Python.ORDER_ATOMIC];
 };
 

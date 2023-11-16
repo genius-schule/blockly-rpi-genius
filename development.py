@@ -9,11 +9,11 @@ import sys
 import os
 import csv
 import random
-import board
-import adafruit_scd4x
-from grove.i2c import Bus
-from grove.gpio import GPIO
-from grove.adc import ADC
+#import board
+#import adafruit_scd4x
+#from grove.i2c import Bus
+#from grove.gpio import GPIO
+#from grove.adc import ADC
 
 ###############################################################################
 # START BLOCK
@@ -67,15 +67,13 @@ class GroveAHT20(object):
 def measurement_aht20():
     try:
         # For debugging without the seeed library comment the following two lines and uncomment below
-        #aht20 = GroveAHT20()
+        aht20 = GroveAHT20()
         #temp, humi = aht20.read()
         temp = 1
         return temp
     except:
         print("Hast du den Sensor korrekt angeschlossen?")
         print("Es konnten keine Daten aufgenommen werden.")
-
-    return temp
 
 #measurement_aht20() # Only needed in finished block
 
@@ -90,14 +88,23 @@ scd4x.start_periodic_measurement()
 def measurement_scd40_temp():
     # returns cached (!) or new value if ready (new value around every 5s)
     # returns None if sensor not ready after startup!
-    temp = scd4x.temperature
-    return temp
+    try:
+        temp = scd4x.temperature
+        return temp
+    except:
+        print("Hast du den Sensor korrekt angeschlossen?")
+        print("Es konnten keine Daten aufgenommen werden.")
+
 
 def measurement_scd40_co2():
     # returns cached (!) or new value if ready (new value around every 5s)
     # returns None if sensor not ready after startup!
-    co2 = scd4x.CO2
-    return co2
+    try:
+        co2 = scd4x.CO2
+        return co2
+    except:
+        print("Hast du den Sensor korrekt angeschlossen?")
+        print("Es konnten keine Daten aufgenommen werden.")
 
     #print("Humidity: %0.1f %%" % scd4x.relative_humidity)
 
@@ -203,16 +210,16 @@ def measurement_test():
 ###############################################################################
 def write_to_csv(value, sensor):
     # Check what kind of data is given to the function
-    if sensor == "Temperatursensor":
+    if sensor == "Temperatur":
         kind = "Temperatur"
         unit = "°C"
-    elif sensor == "Abstandssensor":
+    elif sensor == "Distanz":
         kind = "Abstand"
         unit = "cm"
-    elif sensor == "Feuchtigkeitssensor":
+    elif sensor == "Feuchtigkeit":
         kind = "Feuchtigkeit"
         unit = "% rel."
-    elif sensor == "Lichtsensor":
+    elif sensor == "Helligkeit":
         kind = "Helligkeit"
         unit = "a.u."
     else:
@@ -287,7 +294,7 @@ def plot_data():
 for count in range(100):
     print("------- " + str(count) + " -------")
     print(measurement_aht20())
-    print(measurement_scd40_temp())
-    print(measurement_scd40_co2())
+    #print(measurement_scd40_temp())
+    #print(measurement_scd40_co2())
 #    plot_data()
     time.sleep(1) # Minimum time distance, how is this done? TODO!
