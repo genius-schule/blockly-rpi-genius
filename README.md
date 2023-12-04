@@ -26,6 +26,7 @@ Since the code is used in german schools, most sensors are implemented in german
 * [ ] Changed seeed installation file
 * [ ] Some optical changes if used productive!
 * [ ] Copy the website file into /files
+* [ ] Set x0 to 0, since first few nan values are already measuremnts, also check nan behaviuour
 
 ## How to setup the system
 The outcome of this section should be a ready-to-use system image for the Raspberry Pi 4.
@@ -95,6 +96,10 @@ we found [blockly-gpio](https://github.com/carlosperate/Blockly-gPIo) from carlo
   cp -r Blockly-gPIo/public/* "/var/www/html/Blockly-gPIo"
   chown -R www-data:www-data "/var/www/html/Blockly-gPIo"
   ```
+  Add the following line to `/etc/rc.local` to autostart the deamon
+  ```
+  sudo -u pi -i -- bash -c "python3 /home/pi/blockly-rpi-genius/run.py &"
+  ```
 
 ## Start blockly
 Simple by executing `python3 run.py`.
@@ -126,6 +131,7 @@ To start the webserver, several steps have to be done:
     sudo install -v -o www-data -g www-data -m 775 -d "/home/pi/blockly-web"
     sudo cp -r blockly-rpi-genius/public/* "/home/pi/blockly-web/"
     sudo chown -R www-data:www-data "/home/pi/blockly-web/"
+    sudo chmod -R 777 /home/pi/blockly-web/messungen"
     ```
 
 4. Change the configuration files of apache:
@@ -144,6 +150,14 @@ To start the webserver, several steps have to be done:
 5. Change the ip of the Pi in the index.html file (from raspberrypi.local to 10.3.141.1). **TODO**
 6. Change the output of the plot and path of the csv files in the start block.
 6. Add a subpage for the measurements. **TODO**
+
+TODO change ssid with script (add to rc.local, chmod +x changessid)
+sudo -- bash -c "/home/pi/blockly-rpi-genius/files/changessid"
+
+
+## Sensor infomation
+* AHT20 on I2C
+* SCD40 on I2C
 
 ## Code refactor
 The experimental thinking is:

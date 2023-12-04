@@ -74,15 +74,16 @@ def measurement_aht20():
     except:
         print("Hast du den Sensor korrekt angeschlossen?")
         print("Es konnten keine Daten aufgenommen werden.")
+        return float('nan')
 
 #measurement_aht20() # Only needed in finished block
 
 ###############################################################################
 # SENSOR BLOCK SCD40
 ###############################################################################
-i2c = board.I2C()  # uses board.SCL and board.SDA
-scd4x = adafruit_scd4x.SCD4X(i2c)
-scd4x.start_periodic_measurement()
+#i2c = board.I2C()  # uses board.SCL and board.SDA
+#scd4x = adafruit_scd4x.SCD4X(i2c)
+#scd4x.start_periodic_measurement()
 #print("Serial number:", [hex(i) for i in scd4x.serial_number])
 
 def measurement_scd40_temp():
@@ -90,10 +91,13 @@ def measurement_scd40_temp():
     # returns None if sensor not ready after startup!
     try:
         temp = scd4x.temperature
+        if temp == None:
+            return float("nan")
         return temp
     except:
         print("Hast du den Sensor korrekt angeschlossen?")
         print("Es konnten keine Daten aufgenommen werden.")
+        return float('nan')
 
 
 def measurement_scd40_co2():
@@ -269,17 +273,20 @@ def plot_data():
         data = pd.read_csv(path, delimiter = ",", header = None,
                                names = ["time", "value", "unit", "kindDE"])
         data["time"] = pd.to_datetime(data["time"], format = "%H:%M:%S")
+        # calculate difference in minutes to first measurement
+        data['time_diff'] = (data['time'] - data['time'].iloc[0]).dt.total_seconds() / 60
         # Only first value for unit and name are used, since they
         # should stay the same
         axs[num].set_title(str(data["kindDE"][0]))
         axs[num].set_ylabel(data["unit"][0])
+        axs[num].set_xlabel("Zeit in Minuten seit Experimentbeginn")
         # Plot value over time
-        axs[num].plot(data["time"], data["value"], marker = "x", color = colors[num])
+        axs[num].plot(data["time_diff"], data["value"], marker = "x", color = colors[num])
         axs[num].grid()
         # CAREFUL: The measurement rate has to be 1Hz or lower!
         # Else, the points in between are not plotted, since they have the same
         # timestamp
-        axs[num].xaxis.set_major_formatter(DateFormatter("%H:%M:%S"))
+        #axs[num].xaxis.set_major_formatter(DateFormatter("%H:%M:%S"))
 
     #fig.supxlabel("Zeit") # does not work on old versions of matplotlib
     plt.xticks(rotation = 45)
@@ -293,8 +300,10 @@ def plot_data():
 ###############################################################################
 for count in range(100):
     print("------- " + str(count) + " -------")
-    print(measurement_aht20())
+    #print(measurement_aht20())
+    print(measurement_test())
+    write_to_csv(measurement_test(), "Temperatur")
     #print(measurement_scd40_temp())
     #print(measurement_scd40_co2())
-#    plot_data()
+    plot_data()
     time.sleep(1) # Minimum time distance, how is this done? TODO!
