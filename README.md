@@ -160,3 +160,12 @@ DocumentRoot /home/pi/blockly-web
 ```
 sudo -- bash -c "/home/pi/blockly-rpi-genius/files/changessid"
 ```
+
+# Shrinking the image
+Clone <a href="https://github.com/Drewsif/PiShrink" >PiShrink</a> and execute:
+
+```
+sudo pishrink.sh -v -d in.img out_shrinked.img
+```
+
+Important: when first booting a shrinked image, wait minimum 10 minutes! It needs some time to unpack.
