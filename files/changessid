@@ -1,0 +1,12 @@
+#!/bin/bash
+# changes the ssid of raspap, which is defined
+# in /etc/hostapd/hostapd.conf
+mac=$(ip -br link show eth0 | awk '{ print $3 }')
+line="ssid=raspap_"$mac
+
+echo "MAC-Adresse ausgelesen, sie ist:"
+echo $mac
+echo "Die neue SSID ist:"
+echo $line
+
+sed -i "7s/.*/$line/" /etc/hostapd/hostapd.conf

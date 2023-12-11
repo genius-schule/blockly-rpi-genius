@@ -1,41 +1,44 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>List and Download CSV Files</title>
-</head>
-<body>
-    <h1>List of CSV Files</h1>
-    <p>Click the link below to download a file:</p>
-    <a href="messungen/plot.png" download="messungen/plot.png">Download Plot File</a>
-    <ul id="fileList"></ul>
-
-
-    <script>
-        // Specify the directory path where your CSV files are located
-        var directoryPath = "/home/niklas/noback/git/blockly-rpi-genius/public/";
-
-        // Function to list CSV files in the specified directory
-        function listCSVFiles() {
-            var fileList = document.getElementById("fileList");
-
-            // Fetch the file list from the server
-            fetch(directoryPath)
-                .then(response => response.text())
-                .then(data => {
-                    var files = data.split("\n"); // Assuming each file is on a new line
-                    files.forEach(file => {
-                        if (file.endsWith(".csv")) {
-                            var listItem = document.createElement("li");
-                            listItem.textContent = file;
-                            fileList.appendChild(listItem);
-                        }
-                    });
-                })
-                .catch(error => console.error("Error: " + error));
+    <title>Graph</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
         }
 
-        // Call the function to list CSV files
-        listCSVFiles();
-    </script>
+        #image-container {
+            text-align: center;
+        }
+
+        #download-button {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="image-container">
+        <img src="messungen/plot.png" alt="Centered Image" width="800">
+        <br>
+	<!-- This is quite bruto force, but there is no automatism -->
+	Achtung, es koennen nur Daten heruntergeladen werden, die auch aufgenommen wurden!
+	<br>
+        <a id="download-button" href="messungen/Temperatur.csv" download>
+            <button>Temperatur.csv</button>
+        </a>
+	<br>
+        <a id="download-button" href="messungen/Abstand.csv" download>
+            <button>Abstand.csv</button>
+        </a>
+	<br>
+        <a id="download-button" href="messungen/Feuchtigkeit.csv" download>
+            <button>Feuchtigkeit.csv</button>
+        </a>
+    </div>
 </body>
 </html>
+

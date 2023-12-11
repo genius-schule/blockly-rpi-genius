@@ -39,10 +39,11 @@ Blockly.Python['start_block_genius'] = function(block) {
 		'import os\n'+
 		'import csv\n'+
 		'import random\n'+
+		'import board\n'+
 		'import adafruit_scd4x\n'+
-		'#from grove.i2c import Bus\n'+
-		'#from grove.gpio import GPIO\n'+
-		'#from grove.adc import ADC\n';
+		'from grove.i2c import Bus\n'+
+		'from grove.gpio import GPIO\n'+
+		'from grove.adc import ADC\n';
 	Blockly.Python.definitions_['code_start_block_genius'] =
 		'# Data directory for saving measurements and graphs\n'+
 		'dataDir = "~/blockly-web/messungen/"\n'+
@@ -291,17 +292,19 @@ Blockly.Python['write_plot_genius'] = function(block) {
 		'        data = pd.read_csv(path, delimiter = ",", header = None,\n'+
 		'                               names = ["time", "value", "unit", "name"])\n'+
 		'        data["time"] = pd.to_datetime(data["time"], format = "%H:%M:%S")\n'+
+		'        data["time_diff"] = (data["time"] - data["time"].iloc[0]).dt.total_seconds() / 60\n'+
 		'        # Only first value for unit and name are used, since they\n'+
 		'        # should stay the same\n'+
 		'        axs[num].set_title("Sensor " + str(data["name"][0]))\n'+
 		'        axs[num].set_ylabel(data["unit"][0])\n'+
+		'        axs[num].set_xlabel("Zeit in Minuten seit Experimentbeginn")\n'+
 		'        # Plot value over time\n'+
-		'        axs[num].plot(data["time"], data["value"], marker = "x", color = colors[num])\n'+
+		'        axs[num].plot(data["time_diff"], data["value"], marker = "x", color = colors[num])\n'+
 		'        axs[num].grid()\n'+
 		'        # CAREFUL: The measurement rate has to be 1Hz or lower!\n'+
 		'        # Else, the points in between are not plotted, since they have the same\n'+
 		'        # timestamp\n'+
-		'        axs[num].xaxis.set_major_formatter(DateFormatter("%H:%M:%S"))\n'+
+		'        #axs[num].xaxis.set_major_formatter(DateFormatter("%H:%M:%S"))\n'+
 		'    #fig.supxlabel("Zeit") # does not work on old versions of matplotlib\n'+
 		'    plt.xticks(rotation = 45)\n'+
 		'    plt.tight_layout()\n'+
@@ -310,16 +313,16 @@ Blockly.Python['write_plot_genius'] = function(block) {
 		'    plt.close()\n'+
 		'def write_to_csv(value, sensor):\n'+
 		'    # Check what kind of data is given to the function\n'+
-		'    if sensor == "Temperatursensor":\n'+
+		'    if sensor == "Temperatur":\n'+
 		'        kind = "Temperatur"\n'+
 		'        unit = "°C"\n'+
-		'    elif sensor == "Abstandssensor":\n'+
+		'    elif sensor == "Abstand":\n'+
 		'        kind = "Abstand"\n'+
 		'        unit = "cm"\n'+
-		'    elif sensor == "Feuchtigkeitssensor":\n'+
+		'    elif sensor == "Feuchtigkeit":\n'+
 		'        kind = "Feuchtigkeit"\n'+
 		'        unit = "% rel."\n'+
-		'    elif sensor == "Lichtsensor":\n'+
+		'    elif sensor == "Helligkeit":\n'+
 		'        kind = "Helligkeit"\n'+
 		'        unit = "a.u."\n'+
 		'    else:\n'+
@@ -388,11 +391,12 @@ Blockly.Python['aht20temp_genius'] = function(block) {
 		'    csvaht20temp = "aht20temp.csv"\n'+
 		'    csvaht20humi = "aht20humi.csv" # Not implemented yet\n'+
 		'    try:\n'+
-		'        #temp, humi = aht20.read()\n'+
-		'        temp = 1\n'+
-		'	 return temp\n'+
+		'        aht20 = GroveAHT20()\n'+
+		'        temp, humi = aht20.read()\n'+
+		'        #temp = 1\n'+
+		'        return temp\n'+
 		'    except:\n'+
-		'        print("Hast du den Sensor korrekt angeschlossen?")\n'+
+		'        print("Hast du den Sensor korrekt angeschlossen? (AHT20 an I2C)")\n'+
 		'        print("Es konnten keine Daten aufgenommen werden.")\n';
 	var code = 'measurement_aht20()';
 	return [code, Blockly.Python.ORDER_ATOMIC];
@@ -416,17 +420,23 @@ Blockly.Blocks['scd40temp_genius'] = {
 
 Blockly.Python['scd40temp_genius'] = function(block) {
 	Blockly.Python.definitions_['functions_scd40temp'] =
-		'i2c = board.I2C()  # uses board.SCL and board.SDA\n'+
-		'scd4x = adafruit_scd4x.SCD4X(i2c)\n'+
-		'scd4x.start_periodic_measurement()\n'+
+		'try:\n'+
+		'    i2c = board.I2C()  # uses board.SCL and board.SDA\n'+
+		'    scd4x = adafruit_scd4x.SCD4X(i2c)\n'+
+		'    scd4x.start_periodic_measurement()\n'+
+		'except:\n'+
+		'    print("Hast du den Sensor korrekt angeschlossen? (SCD40 an I2C)")\n'+
+		'    print("Es konnten keine Daten aufgenommen werden.")\n'+
 		'def measurement_scd40_temp():\n'+
 		'    # returns cached (!) or new value if ready (new value around every 5s)\n'+
 		'    # returns None if sensor not ready after startup!\n'+
 		'    try:\n'+
 		'        temp = scd4x.temperature\n'+
+		'        if temp == None:\n'+
+		'            return float("nan")\n'+
 		'        return temp\n'+
 		'    except:\n'+
-		'        print("Hast du den Sensor korrekt angeschlossen?")\n'+
+		'        print("Hast du den Sensor korrekt angeschlossen? (SCD40 an I2C)")\n'+
 		'        print("Es konnten keine Daten aufgenommen werden.")\n';
 	var code = 'measurement_scd40_temp()';
 	return [code, Blockly.Python.ORDER_ATOMIC];
