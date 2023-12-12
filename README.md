@@ -30,7 +30,8 @@ The outcome of this section should be a ready-to-use system image for the Raspbe
 4. Install <a href="https://raspap.com/#docs">raspap</a> and `onboard`, a virtual keyboard (raspap user: `admin`, password: `secret`, raspap wifi ssid: `raspi-webgui`, password: `ChangeMe`).
 5. Install `matplolib` and the grove package (original can be found <a href="https://github.com/Seeed-Studio/grove.py">here</a>, but this is not working on 03.08.2023, a working version is in `./files`)
 6. Clone this git repository
-7. Install the desktop files by coping the .desktop files in `./files/desktop` to `~/Desktop`, the file `blocklyServer.desktop` has to be copied to `/etc/xdg/autostart`!
+7. Install the desktop files by coping the .desktop files in `./files/desktop` to `~/Desktop`.
+8. The file `blocklyServer.desktop` has to be copied to `/etc/xdg/autostart`, but only if the Pi is used with VNC. To install the webserver, see the corresponding section.
 
 install these packages:
 
@@ -124,42 +125,43 @@ To start the webserver, several steps have to be done:
 
 1. Change the port of raspAP from 80 to 8080 in `/etc/lighttpd/lighttpd.conf`:
 
-```
-lighttpd server.port = 8080
-```
+	```
+	lighttpd server.port = 8080
+	```
 
 2. install apache2: `sudo apt-get install apache2`
 
 3. Create the folders and copy the data:
 
-```
-sudo install -v -o www-data -g www-data -m 775 -d "/home/pi/blockly-web"
-sudo cp -r blockly-rpi-genius/public/* "/home/pi/blockly-web/"
-sudo chown -R www-data:www-data "/home/pi/blockly-web/"
-sudo chmod -R 777 /home/pi/blockly-web/messungen"
-```
+	```
+	sudo install -v -o www-data -g www-data -m 775 -d "/home/pi/blockly-web"
+	sudo cp -r blockly-rpi-genius/public/* "/home/pi/blockly-web/"
+	sudo chown -R www-data:www-data "/home/pi/blockly-web/"
+	sudo chmod -R 777 /home/pi/blockly-web/messungen"
+	```
 
 4. Change the configuration file (`/etc/apache2/apache2.conf`) of apache:
 
-```
-<Directory /home/pi/blockly-web>
-    Options Indexes FollowSymLinks
-    AllowOverride None
-    Require all granted
-</Directory>
-```
+	```
+	<Directory /home/pi/blockly-web>
+		Options Indexes FollowSymLinks
+		AllowOverride None
+		Require all granted
+	</Directory>
+	```
 
 5. And in `/etc/apache2/conf-enabled/000-default.conf`:
 
-```
-DocumentRoot /home/pi/blockly-web
-```
+	```
+	DocumentRoot /home/pi/blockly-web
+	```
 
-6. Add this line to `/etc/rc.local` to change the SSID of the WiFi to the MAC adress of the pi (be careful, the `changessid` script has to be executable `chmod +x changessid`):
+6. Add this line to `/etc/rc.local` to change the SSID of the WiFi to the MAC adress of the pi (be careful, the `changessid` script has to be executable `chmod +x changessid`). Also add the second line to autostart the blockly service:
 
-```
-sudo -- bash -c "/home/pi/blockly-rpi-genius/files/changessid"
-```
+	```
+	sudo -- bash -c "/home/pi/blockly-rpi-genius/files/changessid"
+	sudo -u pi -i -- bash -c "sleep 5; python3 /home/pi/blockly-rpi-genius/run.py &"
+	```
 
 # Shrinking the image
 Clone <a href="https://github.com/Drewsif/PiShrink" >PiShrink</a> and execute:
@@ -168,4 +170,15 @@ Clone <a href="https://github.com/Drewsif/PiShrink" >PiShrink</a> and execute:
 sudo pishrink.sh -v -d in.img out_shrinked.img
 ```
 
+If the image should be send over the internet, add the compression option:
+
+```
+sudo pishrink.sh -v -d -a -Z in.img out_shrinked.img
+```
+
 Important: when first booting a shrinked image, wait minimum 10 minutes! It needs some time to unpack.
+
+# On other Versions of the Pi
+There need to be no changes of the images on the Rasperry Pi 3 Version B.
+
+On the Raspberry Pi 3 Version A, there is no LAN Port. Since the changessid script uses the Mac of the LAN adapter of the Pi, the MAC is empty. Change the line from `eth0` to `wlan0` to obtain a correct MAC.
